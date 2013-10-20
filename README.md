@@ -22,7 +22,7 @@ As well as many other highlighting fixes and nuances.
 
 ## Install
 
-Simply install this package with Package Control or otherwise and it should Just Work. Since `-Perl.tmLanguage` ASCII-betically comes before `Perl.tmLanguage`, this language definition will be used by default instead of `Perl.tmLanguage`.
+Simply install this package with Package Control (or otherwise) and it should Just Work. Since `-Perl.tmLanguage` ASCII-betically comes before `Perl.tmLanguage`, this language definition will be used by default instead of `Perl.tmLanguage`.
 
 ## Todo
 
