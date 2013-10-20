@@ -3,6 +3,7 @@
 name: -Perl
 scopeName: source.perl
 comment: Blaise Roth <blaizer@cpan.org>
+uuid: 2c338cc8-a464-4ee4-a56c-d524947fa6f9
 fileTypes:
 - pl
 - PL
@@ -1336,4 +1337,4 @@ repository:
 					\s* \}
 				)
 			name: support.other.variable.perl.normal
-uuid: EDBFE125-6B1C-11D9-9189-000D93589AF6
+...
