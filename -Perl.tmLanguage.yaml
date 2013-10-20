@@ -2,6 +2,7 @@
 ---
 name: -Perl
 scopeName: source.perl
+comment: Blaise Roth <blaizer@cpan.org>
 fileTypes:
 - pl
 - PL
@@ -434,7 +435,9 @@ patterns:
 -
 	match: |-
 		\b(local|my|our|state)(?!\w|::)
-	name: variable.parameter.type.perl
+	name: keyword.function.type.perl
+	captures:
+		0: { name: variable.parameter.type.perl }
 -
 	match: |-
 		\b(and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::)
@@ -753,7 +756,7 @@ patterns:
 		#
 		\s* = \s* $
 	captures:
-		1: { name: keyword.function.format.perl }
+		1: { name: keyword.operator.format.perl }
 		2: { name: constant.other.filehandle.picture.perl }
 	end: |-
 		^\.\s*$
@@ -764,7 +767,7 @@ patterns:
 	- include: '#variable'
 -
 	captures:
-		1: { name: keyword.function.format.perl }
+		1: { name: keyword.operator.format.perl }
 		2: { name: constant.other.format.picture.perl }
 	match: |
 		(?x)
@@ -781,7 +784,7 @@ patterns:
 		)?
 -
 	captures:
-		1: { name: keyword.control.perl }
+		1: { name: keyword.control.package.perl }
 		2: { name: constant.other.definition.package.perl }
 	match: |
 		(?x)
@@ -827,7 +830,7 @@ patterns:
 	name: entity.name.function.block.perl
 -
 	captures:
-		1: { name: keyword.function.filehandle.perl }
+		1: { name: keyword.operator.filehandle.perl }
 		2: { name: constant.other.filehandle.two.perl }
 		3: { name: constant.other.filehandle.two.perl }
 	match: |
@@ -853,7 +856,7 @@ patterns:
 	name: meta.function.filehandle.two.perl
 -
 	captures:
-		1: { name: keyword.function.filehandle.perl }
+		1: { name: keyword.operator.filehandle.perl }
 		2: { name: constant.other.filehandle.perl }
 	match: |
 		(?x)
@@ -877,7 +880,7 @@ patterns:
 -
 	match: |-
 		\b(abs|accept|alarm|atan2|bind|binmode|bless|chdir|chmod|chomp|chop|chown|chr|chroot|close|closedir|connect|caller|cos|crypt|dbmclose|dbmopen|defined|delete|each|endgrent|endhostent|endnetent|endprotoent|endpwent|endservent|eof|evalbytes|exec|exists|exp|fc|fcntl|fileno|flock|fork|formline|getc|getgrent|getgrgid|getgrnam|gethostbyaddr|gethostbyname|gethostent|getlogin|getnetbyaddr|getnetbyname|getnetent|getpeername|getpgrp|getppid|getpriority|getprotobyname|getprotobynumber|getprotoent|getpwent|getpwnam|getpwuid|getservbyname|getservbyport|getservent|getsockname|getsockopt|glob|gmtime|grep|hex|index|int|ioctl|join|keys|kill|lc|lcfirst|length|link|listen|localtime|lock|log|lstat|map|mkdir|msgctl|msgget|msgrcv|msgsnd|oct|open|opendir|ord|pack|pipe|pop|pos|print|printf|prototype|push|quotemeta|rand|read|readdir|readline|readlink|readpipe|recv|ref|rename|reset|reverse|rewinddir|rindex|rmdir|say|scalar|seek|seekdir|select|semctl|semget|semop|send|setgrent|sethostent|setnetent|setpgrp|setpriority|setprotoent|setpwent|setservent|setsockopt|shift|shmctl|shmget|shmread|shmwrite|shutdown|sin|sleep|socket|socketpair|sort|splice|split|sprintf|sqrt|srand|stat|study|substr|symlink|syscall|sysopen|sysread|sysseek|system|syswrite|tell|telldir|tie|tied|time|times|truncate|uc|ucfirst|umask|undef|unlink|unpack|unshift|untie|utime|values|vec|wait|waitpid|wantarray|warn|write)(?!\w|::)
-	name: keyword.function.perl
+	name: keyword.operator.perl
 -
 	captures:
 		1: { name: constant.other.package.perl }
