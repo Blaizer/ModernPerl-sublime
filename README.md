@@ -1,39 +1,38 @@
--Perl
-=====
+ModernPerl
+==========
 
-Perl syntax highlighting for Sublime Text that isn't terrible
+Perl syntax highlighter for Sublime Text that isn't outdated
 
 ## Description
 
-This is -Perl, pronounced "Minus Perl", a Perl syntax highlighter for Sublime Text which is an upgrade over the original `Perl.tmLanguage`. It's called Minus Perl not because it's a downgrade, but for some pragmatic reasons. I needed a name that was ASCII-betically ordered before Perl, so that this language definition would be used instead of the original when both were installed. I didn't want to use some clunky name like BetterPerl or ImprovedPerl, though, so based on the characters that were acceptable in GitHub repo names, I settled on -Perl.
+ModernPerl is an updated Perl syntax highlighter for Sublime Text. It's a drop-in replacement for the outdated `Perl.tmLanguage` that comes default with Sublime Text. The name "ModernPerl" was chosen for a few reasons. The fact that it's less buggy and implements some new stuff is one reason. The name also has a pragmatic reason. I needed a name that was ASCII-betically ordered before Perl, so that this language definition would be used instead of the original when both were installed. (And the other reason for the name was to follow the Modern::Perl buzzword thing.)
 
--Perl uses only the standard highlighting colours, so it should be compatible with your favourite theme. It was, however, designed and tested with the default Monokai theme, so it's most optimal with that.
+ModernPerl uses only the standard highlighting colours, so it should be compatible with your favourite theme. It was, however, designed and tested with the default Monokai theme, so it's most optimal with that.
 
 ## Features
 
 Compared to the original `Perl.tmLanguage`:
 
-  * Variables and function/method calls are no longer the same colour!
-  * All different kinds of barewords are recognised so that they're not highlighted as functions
-  * New Perl keywords like `say` have been added
+  * Highlights functions as best as it can, so less stuff is white
+  * Many different kinds of barewords are recognised so that they're not highlighted as functions
+  * New Perl keywords like `say` are recognised
   * Angle bracket readline/globs are recognised (`<foo/* bar/*>`)
 
 As well as many other highlighting fixes and nuances.
 
 ## Install
 
-Simply install this package with Package Control (or otherwise) and it should Just Work. Since `-Perl.tmLanguage` ASCII-betically comes before `Perl.tmLanguage`, this language definition will be used by default instead of `Perl.tmLanguage`.
+Simply install this package with Package Control (or otherwise) and it should Just Work. `ModernPerl.tmLanguage` ASCII-betically comes before `Perl.tmLanguage`, so this language definition will be used by default instead of `Perl.tmLanguage`.
 
 ## Todo
 
-  * Fix quote constructs (`""`, `qw`, `m`, `s`, `tr`, etc.)
+  * Fix quote constructs (`""`, `qw`, `m`, `s`, `tr`, heredocs, etc.)
   * Make quote constructs recognise escapes, metacharacters, interpolated variables, etc.
-  * Fix heredocs
-  * Use more `(?>)` constructs for even better performance
+  * Use more possesive constructs for small gains in performance
 
 ## Issues
 
-If you find any bugs or want to suggest any improvements feel free to open an [issue](https://github.com/Blaizer/-Perl-sublime-language/issues/) or send a [pull request](https://github.com/Blaizer/-Perl-sublime-language/compare/). You can also email me at <blaizer@cpan.org>.
+If you find any bugs or want to suggest any improvements feel free to open an [issue](https://github.com/Blaizer/ModernPerl-sublime-language/issues/) or send a [pull request](https://github.com/Blaizer/ModernPerl-sublime-language/compare/). You can also email me at <blaizer@cpan.org>.
 
 ## License
 

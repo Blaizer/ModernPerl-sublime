@@ -1,1 +1,6 @@
+!.git*
+.*
 *.cache
+*.tmLanguage.yaml
+*.log
+*.old
