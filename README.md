@@ -15,7 +15,7 @@ Compared to the original `Perl.tmLanguage`:
 
   * Highlights functions as best as it can, so less stuff is white
   * Many different kinds of barewords are recognised so that they're not highlighted as functions
-  * New Perl keywords like `say` are recognised
+  * New Perl keywords such as `say` and `state` are recognised
   * Angle bracket readline/globs are recognised (`<foo/* bar/*>`)
 
 As well as many other highlighting fixes and nuances.

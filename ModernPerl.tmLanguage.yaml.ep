@@ -438,13 +438,13 @@ patterns:
 -
     match: |-
         \b(local|my|our|state)(?!\w|::)
-    name: keyword.function.type.perl
+    name: storage.modifier.perl
     captures:
         0: { name: variable.parameter.type.perl }
 -
     match: |-
         \b(and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::)
-    name: keyword.operator.boolean.named.perl
+    name: keyword.operator.named.perl
 -
     begin: |-
         ((<<) *"([^"]*)").*\n?
@@ -759,7 +759,7 @@ patterns:
         #
         \s* = \s* $
     captures:
-        1: { name: keyword.operator.format.perl }
+        1: { name: keyword.function.format.perl }
         2: { name: constant.language.filehandle.picture.perl }
     end: |-
         ^\.\s*$
@@ -770,7 +770,7 @@ patterns:
     - include: '#variable'
 -
     captures:
-        1: { name: keyword.operator.format.perl }
+        1: { name: keyword.function.format.perl }
         2: { name: constant.language.filehandle.picture.perl }
     match: |
         (?x)
@@ -835,7 +835,7 @@ patterns:
         1: { name: entity.name.function.perl }
 -
     captures:
-        1: { name: keyword.operator.filehandle.perl }
+        1: { name: keyword.function.filehandle.perl }
         2: { name: constant.language.filehandle.perl }
         3: { name: constant.language.filehandle.perl }
     match: |
@@ -861,7 +861,7 @@ patterns:
     name: meta.function.filehandle.two.perl
 -
     captures:
-        1: { name: keyword.operator.filehandle.perl }
+        1: { name: keyword.function.filehandle.perl }
         2: { name: constant.language.filehandle.perl }
     match: |
         (?x)
@@ -884,8 +884,8 @@ patterns:
     name: constant.language.filehandle.keyword.perl
 -
     match: |-
-        \b(abs|accept|alarm|atan2|bind|binmode|bless|chdir|chmod|chomp|chop|chown|chr|chroot|close|closedir|connect|caller|cos|crypt|dbmclose|dbmopen|defined|delete|each|endgrent|endhostent|endnetent|endprotoent|endpwent|endservent|eof|evalbytes|exec|exists|exp|fc|fcntl|fileno|flock|fork|formline|getc|getgrent|getgrgid|getgrnam|gethostbyaddr|gethostbyname|gethostent|getlogin|getnetbyaddr|getnetbyname|getnetent|getpeername|getpgrp|getppid|getpriority|getprotobyname|getprotobynumber|getprotoent|getpwent|getpwnam|getpwuid|getservbyname|getservbyport|getservent|getsockname|getsockopt|glob|gmtime|grep|hex|index|int|ioctl|join|keys|kill|lc|lcfirst|length|link|listen|localtime|lock|log|lstat|map|mkdir|msgctl|msgget|msgrcv|msgsnd|oct|open|opendir|ord|pack|pipe|pop|pos|print|printf|prototype|push|quotemeta|rand|read|readdir|readline|readlink|readpipe|recv|ref|rename|reset|reverse|rewinddir|rindex|rmdir|say|scalar|seek|seekdir|select|semctl|semget|semop|send|setgrent|sethostent|setnetent|setpgrp|setpriority|setprotoent|setpwent|setservent|setsockopt|shift|shmctl|shmget|shmread|shmwrite|shutdown|sin|sleep|socket|socketpair|sort|splice|split|sprintf|sqrt|srand|stat|study|substr|symlink|syscall|sysopen|sysread|sysseek|system|syswrite|tell|telldir|tie|tied|time|times|truncate|uc|ucfirst|umask|undef|unlink|unpack|unshift|untie|utime|values|vec|wait|waitpid|wantarray|warn|write)(?!\w|::)
-    name: keyword.operator.perl
+        \b(abs|accept|alarm|and|atan2|bind|binmode|bless|break|caller|chdir|chmod|chomp|chop|chown|chr|chroot|close|closedir|cmp|connect|continue|cos|crypt|dbmclose|dbmopen|default|defined|delete|die|do|dump|each|else|elsif|endgrent|endhostent|endnetent|endprotoent|endpwent|endservent|eof|eq|eval|evalbytes|exec|exists|exit|exp|fc|fcntl|fileno|flock|for|foreach|fork|format|formline|ge|getc|getgrent|getgrgid|getgrnam|gethostbyaddr|gethostbyname|gethostent|getlogin|getnetbyaddr|getnetbyname|getnetent|getpeername|getpgrp|getppid|getpriority|getprotobyname|getprotobynumber|getprotoent|getpwent|getpwnam|getpwuid|getservbyname|getservbyport|getservent|getsockname|getsockopt|given|glob|gmtime|goto|grep|gt|hex|if|index|int|ioctl|join|keys|kill|last|lc|lcfirst|le|length|link|listen|local|localtime|lock|log|lstat|lt|m|map|mkdir|msgctl|msgget|msgrcv|msgsnd|my|ne|next|no|not|oct|open|opendir|or|ord|our|pack|package|pipe|pipe|pop|pos|print|printf|prototype|push|q|qq|qr|quotemeta|qw|qx|rand|read|readdir|readline|readlink|readpipe|recv|redo|ref|rename|require|reset|return|reverse|rewinddir|rindex|rmdir|s|say|scalar|seek|seekdir|select|semctl|semget|semop|send|setgrent|sethostent|setnetent|setpgrp|setpriority|setprotoent|setpwent|setservent|setsockopt|shift|shmctl|shmget|shmread|shmwrite|shutdown|sin|sleep|socket|socketpair|socketpair|sort|splice|split|sprintf|sqrt|srand|stat|state|study|sub|substr|symlink|syscall|sysopen|sysread|sysseek|system|syswrite|tell|telldir|tie|tied|time|times|tr|truncate|uc|ucfirst|umask|undef|unless|unlink|unpack|unshift|untie|until|use|utime|values|vec|wait|waitpid|wantarray|warn|when|while|write|x|xor|y)(?!\w|::)
+    name: keyword.function.perl
 -
     captures:
         1: { name: constant.language.package.perl }
