@@ -32,7 +32,7 @@ Simply install this package with Package Control (or otherwise) and it should Ju
 
 ## Issues
 
-If you find any bugs or want to suggest any improvements feel free to open an [issue](https://github.com/Blaizer/ModernPerl-sublime-language/issues/) or send a [pull request](https://github.com/Blaizer/ModernPerl-sublime-language/compare/). You can also email me at <blaizer@cpan.org>.
+If you find any bugs or want to suggest any improvements feel free to open an [issue](https://github.com/Blaizer/ModernPerl-sublime/issues/) or send a [pull request](https://github.com/Blaizer/ModernPerl-sublime/compare/). You can also email me at <blaizer@cpan.org>.
 
 ## License
 
