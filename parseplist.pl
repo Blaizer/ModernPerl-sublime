@@ -9,9 +9,18 @@ parseplist.pl - parse plist files between XML and YAML
 
 =head1 OPTIONS
 
-This script has two different modes. The default mode takes a YAML C<INFILE> and outputs an XML C<OUTFILE>. In this mode the default C<OUTFILE> is ModernPerl.tmLanguage and the default C<INFILE> is ModernPerl.tmLanguage.yaml.ep. If C<INFILE> ends in .ep the Extended Perl will be rendered to YAML, then saved as C<OUTFILE>.yaml, before being parsed from YAML to XS as normal. If C<OUTFILE> (or C<OUTFILE>.yaml) exists it will be overwritten.
+This script has two different modes. The default mode takes a YAML C<INFILE> and
+outputs an XML C<OUTFILE>. In this mode the default C<OUTFILE> is
+ModernPerl.tmLanguage and the default C<INFILE> is
+ModernPerl.tmLanguage.yaml.ep. If C<INFILE> ends in .ep the Extended Perl will
+be rendered to YAML, then saved as C<OUTFILE>.yaml, before being parsed from
+YAML to XS as normal. If C<OUTFILE> (or C<OUTFILE>.yaml) exists it will be
+overwritten.
 
-When C<OUTFILE> ends in .yaml or .yml the script instead takes an XML C<INFILE> and outputs a YAML C<OUTFILE>. In this mode the default C<INFILE> is Perl.tmLanguage. If C<OUTFILE> exists it will never be overwritten. Remove the file first before running this script.
+When C<OUTFILE> ends in .yaml or .yml the script instead takes an XML C<INFILE>
+and outputs a YAML C<OUTFILE>. In this mode the default C<INFILE> is
+Perl.tmLanguage. If C<OUTFILE> exists it will never be overwritten. Remove the
+file first before running this script.
 
 =head1 DEPENDENCIES
 
@@ -37,6 +46,7 @@ use autodie;
 sub parse;
 sub unparse;
 sub printout;
+sub badprint;
 
 my $outfile = $ARGV[0] // "ModernPerl.tmLanguage";
 my $infile  = $ARGV[1];
@@ -46,7 +56,7 @@ if ($outfile =~ /\.ya?ml$/i) {
 	require XML::Parser;
 	$infile //= "Perl.tmLanguage";
 	my $p = XML::Parser->new(Style => "Tree");
-	my $tree = $p->parsefile($infile);
+	my $tree = $p->parsefile($#$infile);
 	my @parsed = parse @$tree;
 	DumpFile $outfile, @parsed;
 }
@@ -58,6 +68,10 @@ else {
 		require Mojo::Template;
 		my $mt = Mojo::Template->new(auto_escape => 0);
 		$yaml = $mt->render_file($infile);
+		if (ref $yaml eq "Mojo::Exception") {
+			print $yaml->message;
+			exit 1;
+		}
 		my $yamloutfile = "$outfile.yaml";
 		printout $yamloutfile, <<"YAML", $yaml;
 %YAML 1.1
@@ -83,28 +97,29 @@ YAML
 
  				\2\h+ (\(\? [a-z]*x[a-z-]* \))? .*\n
 
-				(?> \2\h+ .*\n )*
+				(?: \2\h+ .*\n )*
 			)
 		}gmx
 	) {
 		my ($lines, $taker, $minus, $x) = ($1, $3, $4, $5);
-		my $multiline = $lines =~ /\n.*\n.*\n/;
+		my $multiline = $lines =~ /(?:.*\n){3,}/;
 
 		my $bad;
-		if ($multiline and !$x) {
-			$bad = say "Can't multiline non x";
+		if ($multiline and !$x and $taker eq "|") {
+			$bad = "Can't multiline non x";
 		}
-		if ($taker eq ">" and $x) {
-			$bad = say "Can't x > because you can't use comments";
+		if ($multiline and $taker eq ">" and $x) {
+			$bad = "Can't > with multiline x because you can't use comments";
 		}
-		if ($minus and $x) {
-			$bad = say "x looks better without -";
+		if ($multiline and $x and $minus) {
+			$bad = "Multiline x looks better without -";
 		}
 		if (!$minus and !$multiline) {
-			$bad = say "Probably should be using -";
+			$bad = "Probably should be using -";
 		}
 		if ($bad) {
-			print $lines;
+			say $bad;
+			badprint $lines;
 		}
 	}
 
@@ -130,6 +145,11 @@ sub printout {
 	chmod 0444, $outfile; # read only
 }
 
+sub badprint {
+	eval "END { exit 1 }"; # exit 1 on END if we ever reach this code
+	print @_;
+}
+
 sub unparse {
 	my $item = shift;
 	my $level = shift;
@@ -139,7 +159,7 @@ sub unparse {
 	if (!ref $item) {
 		my $tag = shift;
 		if (!defined $tag) {
-			print "no tag: " . Data::Dumper->Dump([$item], ["value"]);
+			badprint "no tag: " . Data::Dumper->Dump([$item], ["value"]);
 			return "";
 		}
 
@@ -163,7 +183,7 @@ sub unparse {
 		for my $key (sort keys %$item)
 		{
 			$a .= unparse $key,          $level + 1, "key";
-			$a .= unparse $item->{$key}, $level + 1, "string";
+			$a .= unparse $item->{$key}, $level + 1, $key eq "applyEndPatternLast" ? "integer" : "string";
 		}
 		$a .= "$indent</dict>";
 	}
@@ -175,7 +195,7 @@ sub unparse {
 		$a .= "$indent</array>";
 	}
 	else {
-		print "unexpected: " . Data::Dumper->Dump([$item], ["item"]);
+		badprint "unexpected: " . Data::Dumper->Dump([$item], ["item"]);
 		return "";
 	}
 
@@ -201,7 +221,7 @@ sub parse {
 			push @a, [ parse @inner ];
 		}
 		else {
-			say "skipped: $name";
+			badprint "skipped: $name\n";
 			push @a, parse @inner;
 		}
 	}

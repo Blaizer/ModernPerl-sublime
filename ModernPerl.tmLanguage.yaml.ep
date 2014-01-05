@@ -10,7 +10,6 @@ comment: Blaise Roth <blaizer@cpan.org>
 uuid: 2c338cc8-a464-4ee4-a56c-d524947fa6f9
 fileTypes:
 - pl
-- PL
 - pm
 - pod
 - t
@@ -19,799 +18,477 @@ firstLineMatch: |-
 patterns:
 - include: '#line_comment'
 - include: '#pod'
-- include: '#variable'
--
-    begin: |-
-        \b(?=qr\s*[^\s\w])
-    end: |-
-        ((([\p{Lower}]*)))(?=(\s+\S|\s*[;\,\#\{\}\)]|$))
-    endCaptures:
-        1: { name: string.regexp.compile.perl }
-        2: { name: punctuation.definition.string.perl }
-        3: { name: keyword.control.regexp-option.perl }
-    patterns:
-    -
-        begin: |-
-            (qr)\s*\{
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: '\}'
-        name: string.regexp.compile.nested_braces.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_braces_interpolated'
-    -
-        begin: |-
-            (qr)\s*\[
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: ']'
-        name: string.regexp.compile.nested_brackets.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_brackets_interpolated'
-    -
-        begin: |-
-            (qr)\s*<
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: '>'
-        name: string.regexp.compile.nested_ltgt.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_ltgt_interpolated'
-    -
-        begin: |-
-            (qr)\s*\(
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: '\)'
-        name: string.regexp.compile.nested_parens.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_parens_interpolated'
-    -
-        begin: |-
-            (qr)\s*\'
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: "'"
-        name: string.regexp.compile.single-quote.perl
-        patterns:
-        - include: '#escaped_char'
-    -
-        begin: |-
-            (qr)\s*([^\s\w\'\{\[\(\<])
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: '\2'
-        name: string.regexp.compile.simple-delimiter.perl
-        patterns:
-        -
-            comment: This is to prevent thinks like qr/foo$/ to treat $/ as a variable
-            match: |-
-                \$(?=[^\s\w\'\{\[\(\<])
-            name: keyword.control.anchor.perl
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_parens_interpolated'
--
-    begin: |-
-        \b(?=(?<!\&)(s)(\s+\S|\s*[;\,\#\{\}\(\)\[<]|$))
-    end: |-
-        ((([\p{Lower}]*)))(?=(\s+\S|\s*[;\,\#\{\}\)\]>]|$))
-    endCaptures:
-        1: { name: string.regexp.replace.perl }
-        2: { name: punctuation.definition.string.perl }
-        3: { name: keyword.control.regexp-option.perl }
-    patterns:
-    -
-        begin: |-
-            (s)\s*\{
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: '\}'
-        name: string.regexp.nested_braces.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#nested_braces'
-    -
-        begin: |-
-            (s)\s*\[
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: ']'
-        name: string.regexp.nested_brackets.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#nested_brackets'
-    -
-        begin: |-
-            (s)\s*<
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: '>'
-        name: string.regexp.nested_ltgt.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#nested_ltgt'
-    -
-        begin: |-
-            (s)\s*\(
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: '\)'
-        name: string.regexp.nested_parens.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#nested_parens'
-    -
-        begin: '\{'
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: '\}'
-        name: string.regexp.format.nested_braces.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_braces_interpolated'
-    -
-        begin: '\['
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: ']'
-        name: string.regexp.format.nested_brackets.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_brackets_interpolated'
-    -
-        begin: '<'
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: '>'
-        name: string.regexp.format.nested_ltgt.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_ltgt_interpolated'
-    -
-        begin: '\('
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: '\)'
-        name: string.regexp.format.nested_parens.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_parens_interpolated'
-    -
-        begin: "'"
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: "'"
-        name: string.regexp.format.single_quote.perl
-        patterns:
-        -
-            match: |-
-                \\['\\]
-            name: constant.character.escape.perl
-    -
-        begin: |-
-            ([^\s\w\[({<;])
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: '\1'
-        name: string.regexp.format.simple_delimiter.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-    -
-        match: '\s+'
--
-    begin: |-
-        \b(?=s([^\s\w\[({<]).*\1([\p{Lower}]*)([\}\)\;\,]|\s+))
-    comment: string.regexp.replaceXXX
-    end: |-
-        ((([\p{Lower}]*)))(?=([\}\)\;\,]|\s+|$))
-    endCaptures:
-        1: { name: string.regexp.replace.perl }
-        2: { name: punctuation.definition.string.perl }
-        3: { name: keyword.control.regexp-option.perl }
-    patterns:
-    -
-        begin: |-
-            (s\s*)([^\s\w\[({<])
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: |-
-            (?=\2)
-        name: string.regexp.replaceXXX.simple_delimiter.perl
-        patterns:
-        - include: '#escaped_char'
-    -
-        begin: "'"
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: "'"
-        name: string.regexp.replaceXXX.format.single_quote.perl
-        patterns:
-        -
-            match: |-
-                \\['\\]
-            name: constant.character.escape.perl.perl
-    -
-        begin: |-
-            ([^\s\w\[({<])
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: '\1'
-        name: string.regexp.replaceXXX.format.simple_delimiter.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
--
-    begin: |-
-        \b(?=(?<!\\)s\s*([^\s\w\[({<]))
-    comment: string.regexp.replace.extended
-    end: |-
-        \2((([\p{Lower}]*x[\p{Lower}]*)))\b
-    endCaptures:
-        1: { name: string.regexp.replace.perl }
-        2: { name: punctuation.definition.string.perl }
-        3: { name: keyword.control.regexp-option.perl }
-    patterns:
-    -
-        begin: |-
-            (s)\s*(.)
-        captures:
-            0: { name: punctuation.definition.string.perl }
-            1: { name: support.function.perl }
-        end: |-
-            (?=\2)
-        name: string.regexp.replace.extended.simple_delimiter.perl
-        patterns:
-        - include: '#escaped_char'
-    -
-        begin: "'"
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: |-
-            '(?=[\p{Lower}]*x[\p{Lower}]*)\b
-        name: string.regexp.replace.extended.simple_delimiter.perl
-        patterns:
-        - include: '#escaped_char'
-    -
-        begin: '(.)'
-        captures:
-            0: { name: punctuation.definition.string.perl }
-        end: |-
-            \1(?=[\p{Lower}]*x[\p{Lower}]*)\b
-        name: string.regexp.replace.extended.simple_delimiter.perl
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
 -
     match: |-
-        (?:\b|-)[\w&&\D]\w*\s*(?==>)
-    name: constant.language.string.perl
+        [%&*/]=|&&|\*\*|//
+    comment: >-
+        These would otherwise be highlighted as variables or regex,
+        but they're more likely to be an operator.
 -
-    captures:
-        1: { name: constant.language.string.perl }
     match: |
         (?x)
-        {
-        (?! \s+ -?[\w&&\D]\w* \s+) # can't have spaces on both sides
-        (\s*-?[\w&&\D]\w*\s*)
-        }
-    name: meta.bareword.braced.perl
--
+        ( & \g<identifier> )
+        |
+        (
+            \$\# (?:\$\s*)* \g<normal_identifier>
+            |
+            (?: [@$] \s* | [%*] )
+            (?<identifier>
+                (?:\$\s*)*
+                (?:
+                    # digit variable like $2
+                    (
+                        \d+
+                        |
+                        (?:::)+ \d+ (?!\w|::|'[^\W\d])
+                    )
+                    |
+                    { \s* \g<-1> \s* }
+                |
+                    (?<normal_identifier> # normal variable like $foo::bar'baz
+                        (
+                            (?:
+                                (?:::|'?[^\W\d]) \w*
+                            )++
+                        )
+                        |
+                        { \s* \g<-1> \s* }
+                    )
+                |
+                    # caret variable like $^W or ${^Word}
+                    (\^ [^\W\d\p{Lower}])
+                    |
+                    { \s* \g<-1> \w* \s* }
+                |
+                    # punctuation variable like $[
+                    ([^[^!-~]{\w\s])
+                    |
+                    { \s* \g<-1> \s* }
+                )
+            )
+        |
+            [@$] \s*
+        )
     captures:
-        1: { name: punctuation.definition.string.perl }
-        5: { name: punctuation.definition.string.perl }
-    match: |-
-        (?<!\\)((~\s*)?\/)(\S.*?)(?<!\\)(\\{2})*(\/)
-    name: string.regexp.find.perl
--
-    begin: |-
-        (?<!\\)(\~\s*\/)
-    captures:
-        0: { name: punctuation.definition.string.perl }
-    end: |-
-        \/([\p{Lower}]*x[\p{Lower}]*)\b
-    endCaptures:
-        1: { name: keyword.control.regexp-option.perl }
-    name: string.regexp.find.extended.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
-- include: '#ampersand_sub'
-- include: '#other_sigil'
--
-    captures:
-        1: { name: support.function.perl }
-        2: { name: punctuation.definition.string.perl }
-        5: { name: punctuation.definition.string.perl }
-    match: |-
-        \b(m)\s*(?<!\\)([^\[\{\(\w\s])(.*?)(?<!\\)(\\{2})*(\2)
-    name: string.regexp.find-m.perl
--
-    begin: |-
-        \b(m)\s*(?<!\\)\(
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\)'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.regexp.find-m-paren.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_parens_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \b(m)\s*(?<!\\)\{
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\}'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.regexp.find-m-brace.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_braces_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \b(m)\s*(?<!\\)\[
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: ']'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.regexp.find-m-bracket.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_brackets_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \b(m)\s*(?<!\\)\<
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '>'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.regexp.find-m-ltgt.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_ltgt_interpolated'
-    - include: '#variable'
--
-    captures:
-        1: { name: support.function.perl }
-        2: { name: punctuation.definition.string.perl }
-        5: { name: punctuation.definition.string.perl }
-        8: { name: punctuation.definition.string.perl }
-    match: |-
-        \b(s|tr|y)\s*([^\w\s])(.*?)(?<!\\)(\\{2})*(\2)(.*?)(?<!\\)(\\{2})*(\2)
-    name: string.regexp.replace.perl
--
-    match: |-
-        \b(__FILE__|__LINE__|__PACKAGE__|__SUB__)(?!\w|::)
-    name: constant.language.compiler-token.perl
--
-    captures:
-        1: { name: keyword.control.labelled.perl }
-        2: { name: constant.language.label.perl }
-    match: |
-        (?x)
-        \b (dump|goto|last|next|redo) (?!\w|::)
-        #
+        1: { name: support.function.ampersand.perl }
+        2: { name: punctuation.definition.var.perl }
+<%
+for (
+    [ 'qw?', "(')", 'meta.string.q.perl',  'string.quoted.single.perl', 'single' ],
+    [ 'qq',  '(")', 'meta.string.qq.perl', 'string.quoted.double.perl', 'double' ],
+    [ 'qx',  '(`)', 'meta.string.qx.perl', 'string.interpolated.perl',  'double', 'single' ],
+    [ 'qr',  undef, 'meta.regexp.qr.perl', 'string.regexp.perl',        'double', 'single',   'adilmopsux' ],
+    [ 'm',   <<'#', 'meta.regexp.m.perl',  'string.regexp.perl',        'double', 'single', 'acdgilmopsux' ],
+# Guessing whether a / is a division or the start of a regex is pretty tricky!
+        (?=\s*/) # optimisation to fail faster
         (?:
-            # open parens or space
-            (?: \s+ | \s*(?: \(\s* )+ )
-            #
-            # LABEL
-            ([\w&&\D&&\P{Lower}][\w&&\P{Lower}]*) (?!\w|::|'\w)
-        )?
-    name: meta.control.labelled.perl
+            # punctuation to expect before a /regex/
+            (?<=\W)
+            (?:
+                (?<=
+                    # binding operators - definitely a regex
+                    [=!~]~
+                    |
+                    # probably a regex
+                    [,;!({\[] | => | && | \|\|
+                )
+                |
+                # assignment - but not a mutator, comparison, or variable
+                (?<= = )
+                (?<! [*/'%'x+\-.=!<>&|^@$] = )
+            )
+        |
+            # named operators you'd expect before a /regex/
+            (?<=\w)
+            (?:
+                # never gonna be perfect with the limitations of lookbehinds, but this is close
+                (?<= if | or )                           (?<! [\w@$&*'%'].{2} | ::.{2} )
+                |
+                (?<= and | die | for | not | say | xor ) (?<! [\w@$&*'%'].{3} | ::.{3} )
+                |
+                (?<= exit | warn | when )                (?<! [\w@$&*'%'].{4} | ::.{4} )
+                |
+                (?<= print | split | until | while )     (?<! [\w@$&*'%'].{5} | ::.{5} )
+                |
+                (?<= return | unless )                   (?<! [\w@$&*'%'].{6} | ::.{6} )
+                |
+                (?<= defined | foreach )                 (?<! [\w@$&*'%'].{7} | ::.{7} )
+            )
+        )
+        \s*+ (\/)
+        |
+        # otherwise we can try for a single line /regex/ if it's after space
+        (\/) (?<=\s/|^/)
+        (?=
+            (?:
+                # something like / / is pretty common
+                \s+
+                |
+                # this means no spaces at the start or end unless they're backslashed
+                # so /\ woo regex\ / works
+                (?!\s) (?: [^\\/] | \\. )* (?: [^\s\\/] | \\. )
+            )
+            \/
+        )
+#
+) {
+    my ($keyword, $quote, $meta, $scope, $include, $single, $modifiers) = @$_;
+%>\
 -
-    match: |-
-        \b(break|continue|default|die|do|dump|else|elsif|eval|exit|for|foreach|given|goto|if|last|next|redo|return|unless|until|when|while)(?!\w|::)
-    name: keyword.control.perl
--
-    match: |-
-        \b(local|my|our|state)(?!\w|::)
-    name: storage.modifier.perl
-    captures:
-        0: { name: variable.parameter.type.perl }
--
-    match: |-
-        \b(and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::)
-    name: keyword.operator.named.perl
--
-    begin: |-
-        ((<<) *"([^"]*)").*\n?
-    captures:
-        0: { name: punctuation.definition.string.perl }
-        1: { name: string.unquoted.heredoc.doublequote.perl }
-        2: { name: punctuation.definition.heredoc.perl }
-    contentName: string.unquoted.heredoc.doublequote.perl
-    end: |-
-        (^\3$)
-    patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
--
-    begin: |-
-        ((<<) *'([^']*)').*\n?
-    captures:
-        0: { name: punctuation.definition.string.perl }
-        1: { name: string.unquoted.heredoc.quote.perl }
-        2: { name: punctuation.definition.heredoc.perl }
-    contentName: string.unquoted.heredoc.quote.perl
-    end: |-
-        (^\3$)
--
-    begin: |-
-        ((<<) *`([^`]*)`).*\n?
-    captures:
-        0: { name: punctuation.definition.string.perl }
-        1: { name: string.unquoted.heredoc.backtick.perl }
-        2: { name: punctuation.definition.heredoc.perl }
-    contentName: string.unquoted.heredoc.backtick.perl
-    end: |-
-        (^\3$)
-    patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
--
-    begin: |-
-        ((<<) *((?![=\d\$ ])[^;,'"`\s)]*)).*\n?
-    captures:
-        0: { name: punctuation.definition.string.perl }
-        1: { name: string.unquoted.heredoc.perl }
-        2: { name: punctuation.definition.heredoc.perl }
-    contentName: string.unquoted.heredoc.perl
-    end: |-
-        (^\3$)
-    patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
--
-    begin: |-
-        \bqq\s*([^\(\{\[\<\w\s])
+    begin: |
+        (?x)
+        \b (<%= $keyword %>) \s*
+        (?:
+            ( (\() | (<) | (\[) | ({) ) | ([^[^!-~]\w\s])
+        )
+        % if (defined $quote) { chomp $quote;
+        |
+        <%= $quote %>
+        % }
+    end: |
+        (?x)
+        (?:
+            % { my $q = defined $quote ? '\8' : '';
+            % $q .= '\9' if $keyword =~ /m/;
+            ((?!\3)\)|(?!\4)>|(?!\5)\]|(?!\6)\})
+            |
+            ([\7<%=$q%>[&&]])
+            % }
+        )
+        % if (defined $modifiers) {
+        ([<%= $modifiers %>]*) \w*
+        % }
+    name: <%= $meta %>
     beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\1'
+        1: { name: keyword.operator.perl }
+        # 2: { name: punctuation.definition.string.pair.perl }
+        7: { name: punctuation.definition.string.begin.perl }
+        % if (defined $quote) {
+        8: { name: punctuation.definition.string.begin.perl }
+        % } if ($keyword =~ /m/) {
+        9: { name: punctuation.definition.string.begin.perl }
+        % }
+    % if (defined $scope) {
+    contentName: <%= $scope %>
+    % }
     endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.qq.perl
+        # 1: { name: punctuation.definition.string.pair.perl }
+        2: { name: punctuation.definition.string.end.perl }
+        % if (defined $modifiers) {
+        3: { name: keyword.operator.modifier }
+        % }
     patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
--
-    begin: |-
-        \bqx\s*([^'\(\{\[\<\w\s])
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\1'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.interpolated.qx.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
--
-    begin: |-
-        \bqx\s*'
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: "'"
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.interpolated.qx.single-quote.perl
-    patterns:
-    - include: '#escaped_char'
--
-    begin: '"'
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '"'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.double.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
--
-    begin: |-
-        \bqw?\s*([^\(\{\[\<\w\s])
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\1'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.q.perl
-    patterns:
-    - include: '#escaped_char'
--
-    begin: "(')"
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\1'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.single.perl
-    patterns:
+    % if (defined $single) {
     -
-        match: |-
-            \\['\\]
-        name: constant.character.escape.perl
--
-    begin: '`'
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '`'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.interpolated.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#variable'
--
-    begin: |-
-        \bqq\s*\(
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\)'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.qq-paren.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_parens_interpolated'
-    - include: '#variable'
+        begin: |-
+            (?<=')
+        end: |-
+            (?=')
+        patterns:
+        - include: '#<%= $single %>'
+    % }
+    - include: '#<%= $include %>'
+% }
+% our ($open, $close, $bopen, $bclose);
+% our $i = 0;
+% sub quote_characters;
+<%
+for (
+    [ 's',    'meta.regexp.s.perl', 'double_or_single_regexp', 'double_or_single', 'acdegilmoprsux' ],
+    [ 'tr|y', 'meta.tr.perl',       'double_or_single',        'double_or_single',           'cdrs' ],
+) {
+    my ($keyword, $meta, $first_include, $second_include, $modifiers) = @$_;
+%>\
 -
     begin: |-
-        \bqq\s*\{
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\}'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.qq-brace.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_braces_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \bqq\s*\[
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: ']'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.qq-bracket.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_brackets_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \bqq\s*\<
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '>'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.qq-ltgt.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_ltgt_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \bqx\s*\(
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\)'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.interpolated.qx-paren.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_parens_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \bqx\s*\{
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\}'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.interpolated.qx-brace.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_braces_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \bqx\s*\[
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: ']'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.interpolated.qx-bracket.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_brackets_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \bqx\s*\<
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '>'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.interpolated.qx-ltgt.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_ltgt_interpolated'
-    - include: '#variable'
--
-    begin: |-
-        \bqw?\s*\(
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\)'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.q-paren.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_parens'
--
-    begin: |-
-        \bqw?\s*\{
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '\}'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.q-brace.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_braces'
--
-    begin: |-
-        \bqw?\s*\[
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: ']'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.q-bracket.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_brackets'
--
-    begin: |-
-        \bqw?\s*\<
-    beginCaptures:
-        0: { name: punctuation.definition.string.begin.perl }
-    end: '>'
-    endCaptures:
-        0: { name: punctuation.definition.string.end.perl }
-    name: string.quoted.other.q-ltgt.perl
-    patterns:
-    - include: '#escaped_char'
-    - include: '#nested_ltgt'
--
-    begin: |-
-        \b(__END__|__DATA__)(?!\w|::)
-    beginCaptures:
-        1: { name: comment.block.arbitrary.start }
+        (?x) \b (?= (<%= $keyword %>) \s* ([^[^!-~]\w\s]) )
     end: |-
-        (?!^)^
-    name: comment.block.aribtrary.perl
+        (?!\b\1\s*\2)
+    name: <%= $meta %>
     patterns:
-    - include: '#pod'
+    % while (quote_characters) {
+    % if ($bopen) {
+    -
+        begin: |-
+            (?x) (<%= $keyword %>) \s* (<%= $bopen %>)
+        end: |
+            (?x)
+            (?<!<%= $bopen %>)(?!<%= $bclose %>)
+            (?:
+                (?<!<%= $bclose %>|^)
+                (?:
+                    (?<![^\W[<%= $modifiers %>]])
+                    ([<%= $modifiers %>]*)
+                )?
+                \w*
+            )?
+        beginCaptures:
+            1: { name: keyword.operator.perl }
+            # 2: { name: punctuation.definition.string.pair.perl }
+        endCaptures:
+            1: { name: keyword.operator.modifier.perl }
+        patterns:
+        -
+            begin: |-
+                (?x) (<%= $bclose %>) (?: \s+ (\#.*) )? \s* \n
+            end: |
+                (?x)
+                (?:
+                    (?<=\S)
+                    |
+                    (?= ^ \s*+ [[^!-~]\w] )
+                )
+                (?:
+                    (?<=<%= $bclose %>)
+                    (?: ([<%= $modifiers %>]) | \w )
+                )?
+                <%= $bclose %>*
+            beginCaptures:
+                # 1: { name: punctuation.definition.string.pair.perl }
+                2: { name: comment.line.number-sign.perl }
+            endCaptures:
+                1: { name: keyword.operator.modifier.perl }
+            patterns:
+            -
+                match: |-
+                   (?x) ^ \s* (\#.*)? \n
+                captures:
+                    1: { name: comment.line.number-sign.perl }
+            -
+                begin: |
+                    (?x)
+                    ^ \s*
+                    (?:
+                        ( (\() | (<) | (\[) | ({) ) | ([^[^!-~]\w\s])
+                    )
+                end: |-
+                    ((?!\2)\)|(?!\3)>|(?!\4)\]|(?!\5)\})|([\6[&&]])
+                beginCaptures:
+                    # 1: { name: punctuation.definition.string.pair.perl }
+                    6: { name: punctuation.definition.string.begin.perl }
+                endCaptures:
+                    # 1: { name: punctuation.definition.string.pair.perl }
+                    2: { name: punctuation.definition.string.end.perl }
+                patterns:
+                - include: '#<%= $second_include %>'
+        -
+            begin: |
+                (?x)
+                (<%= $bclose %>) \s*
+                (?:
+                    ( (\() | (<) | (\[) | ({) ) | ([^[^!-~]\w\s])
+                )
+            end: |
+                (?x)
+                (?:
+                    ((?!\3)\)|(?!\4)>|(?!\5)\]|(?!\6)\})|([\7[&&]])
+                )
+                (?:
+                    (?<=<%= $bclose %>)
+                    (?: ([<%= $modifiers %>]) | \w )
+                )?
+                <%= $bclose %>*
+            beginCaptures:
+                # 1: { name: punctuation.definition.string.pair.perl }
+                # 2: { name: punctuation.definition.string.pair.perl }
+                7: { name: punctuation.definition.string.begin.perl }
+            endCaptures:
+                # 1: { name: punctuation.definition.string.pair.perl }
+                2: { name: punctuation.definition.string.end.perl }
+                3: { name: keyword.operator.modifier.perl }
+            patterns:
+            - include: '#<%= $second_include %>'
+        -
+            match: |-
+                (<%= $bclose %>)
+            # captures:
+                # 1: { name: punctuation.definition.string.pair.perl }
+        -
+            begin: |-
+                (?<=<%= $bopen %>)
+            end: |-
+                (?=<%= $bclose %>)
+            patterns:
+            - include: '#<%= $first_include %>'
+    % } else {
+    -
+        begin: |-
+            (?x) (?= \w+ \s* <%= $open %> )
+        end: |-
+            (?x) (<%= $open %>) ([<%= $modifiers %>]*) \w*
+        endCaptures:
+            1: { name: punctuation.definition.string.end.perl }
+            2: { name: keyword.operator.modifier.perl }
+        patterns:
+        -
+            begin: |-
+                (?x) (\w+) \s* (<%= $open %>)
+            end: |
+                (?x)
+                ((<%= $open %>))
+                (?:
+                    (?! \g<4> <%= $open %> )
+                    |
+                    (?<=')(\g<4>)
+                    |
+                    ( \w+ \s* )
+                )
+            beginCaptures:
+                1: { name: keyword.operator.perl }
+                2: { name: punctuation.definition.string.begin.perl }
+            endCaptures:
+                1: { name: punctuation.definition.string.begin.perl }
+                2: { name: punctuation.definition.string.end.perl }
+                3: { name: string.quoted.single.perl }
+                4: { name: string.quoted.double.perl }
+            patterns:
+            - include: '#<%= $first_include %>'
+        -
+            begin: |-
+                (?<=<%= $open %>)
+            end: |-
+                (?=<%= $open %>)
+            patterns:
+            - include: '#<%= $second_include %>'
+    % }
+    % }
+% }
+- include: '#heredoc_1'
 -
     match: |
         (?x)
         (?<! [<])
         <
-        (?! [\s=] )
-        (?> (?:
-            \s* (?: [^<>=$\s\\]+ | (?:\\.)+ | [=$]+ (?! [>]) )
-        )* )
+        (
+            (?! [\s=])
+            (?:
+                \s* (?: [^<>=$\s\\]+ | \\. | [=$] (?! [>]) )
+            )*+
+        )
         >
         (?! [>=])
-    name: string.quoted.angle.perl
+    name: meta.string.glob
+    captures:
+        1: { name: string.quoted.other.glob.perl }
+-
+    match: |
+        (?x)
+        {(
+            \s* (-?[^\W\d]\w*)
+        |
+            \g<-1> \s*
+        )}
+    captures:
+        1: { name: constant.language.string.perl }
+-
+    match: |-
+        (-?\b[^\W\d]\w*+)\s*+=>
+    captures:
+        1: { name: constant.language.string.perl }
+-
+    match: |-
+        \b__(?:FILE|LINE|PACKAGE|SUB)__(?!\w|::|'[^\W\d])
+    name: constant.language.compiler-token.perl
+-
+    match: |
+        (?x)
+        \b (dump|goto|last|next|redo)
+        #
+        (?:
+            # open parens or space
+            (?: \s* (?:\(\s*)+ | \s+ )
+            #
+            # LABEL
+            ([^\W\d\p{Lower}][^\W\p{Lower}]*)
+        )?
+        #
+        (?!\w|::|'[^\W\d])
+    name: meta.control.labelled.perl
+    captures:
+        1: { name: keyword.control.perl }
+        2: { name: constant.language.label.perl }
+-
+    match: |-
+        \b(?:break|continue|default|dump|else|elsif|for|foreach|given|goto|if|last|next|redo|return|unless|until|when|while)(?!\w|::|'[^\W\d])
+    name: keyword.control.perl
+-
+    match: |-
+        \b(?:do|eval)(?=\s*{)
+    name: keyword.control.perl
+-
+    match: |-
+        \b(?:local|my|our|state)(?!\w|::|'[^\W\d])
+    name: storage.modifier.perl
+    captures:
+        0: { name: variable.parameter.storage.modifier.perl }
+-
+    match: |-
+        \b(?:m|q|qq|qr|qw|qx|s|tr|y)\b
+    name: keyword.operator.perl
+-
+    match: |-
+        \b(?:and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::|'[^\W\d])
+    name: keyword.operator.perl
+-
+    begin: |-
+        \b__(?:END|DATA)__(?!\w|::|'[^\W\d])
+    end: |-
+        (?!)
+    name: comment.block.other.perl
+    patterns:
+    - include: '#pod'
 -
     begin: |
         (?x)
         \b (format)
         #
         # format picture - copied from variable
-        (?: \s+ ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*) )?
+        (?: \s+
+            ((?!')(?:(?:::|'?[^\W\d])\w*)++)
+        )?
         #
         \s* = \s* $
-    captures:
-        1: { name: keyword.function.format.perl }
-        2: { name: constant.language.filehandle.picture.perl }
     end: |-
         ^\.\s*$
     name: meta.format.perl
+    beginCaptures:
+        1: { name: keyword.function.perl }
+        2: { name: constant.language.filehandle.picture.perl }
     contentName: string.unquoted.format.perl
     patterns:
     - include: '#line_comment'
     - include: '#variable'
 -
-    captures:
-        1: { name: keyword.function.format.perl }
-        2: { name: constant.language.filehandle.picture.perl }
     match: |
         (?x)
         # this pattern will match until the begin/end pattern above matches
         # so that format PICTURE highlights before you put the = in
         #
-        \b (format)
+        \b (format) \s+
         #
-        (?:
-            \s+
-            # format picture - copied from variable
-            ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*)
-            \s* $
-        )?
--
+        # format picture - copied from variable
+        ((?!')(?:(?:::|'?[^\W\d])\w*)++)
+        \s* $
     captures:
-        1: { name: keyword.control.package.perl }
-        2: { name: constant.language.package.perl }
+        1: { name: keyword.function.perl }
+        2: { name: constant.language.filehandle.picture.perl }
+-
     match: |
         (?x)
-        \b (
-            # autoquoting keywords
-            (?:package|use|require|no)
-            (?!\w|::)
-        )
-        #
-        (?:\s+(
+        # autoquoting keywords
+        \b (package|use|require|no) \s+
+        (
             # not a version number
-            (?!(v\d+(?:\.\d+)*)(?!\w|::))
+            (?!v\d)
             #
             # package name - copied from variable
-            (?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*
-            (?!\w|::)
-        ))?
-    name: meta.class.perl
--
+            (?!')(?:(?:::|'?[^\W\d])\w*)+
+        )
+    name: meta.package.perl
     captures:
-        1: { name: keyword.control.sub.perl }
-        2: { name: support.function.control.non-standard-sub.perl }
-        3: { name: entity.name.function.perl }
-        4: { name: storage.type.method.perl }
+        1: { name: keyword.control.perl }
+        2: { name: constant.language.package.perl }
+-
     match: |
         (?x)
         \b (?:
@@ -819,545 +496,385 @@ patterns:
         |
             # non-standard sub definitions
             (method|func|before|after|around|trigger|build|set)
-        ) (?!\w|:)
+        ) (?!\w|::|'[^\W\d])
         #
         # sub name - copied from variable
-        (?:\s+( (?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)* (?!\w|::) ))?
+        (?:
+            \s+ (
+                (?!')(?:(?:::|'?[^\W\d])\w*)++
+            )
+        )?
         #
         # prototype - can contain anything but brackets
-        (\s* \( [^()]* \))?
+        (?:
+            \s* \( ([^()]*) \)
+        )?
     name: meta.function.perl
+    captures:
+        1: { name: keyword.control.perl }
+        2: { name: support.function.perl }
+        3: { name: entity.name.function.perl }
+        4: { name: storage.type.method.perl }
 -
     match: |-
-        \b(AUTOLOAD|BEGIN|CHECK|END|INIT|UNITCHECK)(?!\w|::)
+        \b(?:AUTOLOAD|BEGIN|CHECK|END|INIT|UNITCHECK)(?!\w|::|'[^\W\d])
     name: meta.function.perl
     captures:
-        1: { name: entity.name.function.perl }
+        0: { name: entity.name.function.perl }
 -
+    match: |
+        (?x)
+            # these functions can take two filehandles as arguments
+            \b (accept|pipe|socketpair) \g<5>
+            (\g<6>) \s*,\s* (\g<6>)
+        |
+            # these functions take a filehandle as the first argument
+            (
+                \b (?:accept|bind|binmode|chdir|close|closedir|connect|eof|fcntl|fileno|flock|formline|getc|getpeername|getsockname|getsockopt|ioctl|listen|lstat|open|opendir|pipe|print|printf|read|readdir|readline|recv|rewinddir|say|seek|seekdir|select|send|setsockopt|shutdown|socket|socketpair|stat|sysopen|sysread|sysseek|syswrite|tell|telldir|truncate|write)
+            |
+                # filetest operators
+                (?<!\w) -[ABCMORSTWXbcdefgkloprstuwxz]
+            )
+            (
+                (?!\w|::|'[^\W\d])
+                # open parens or space
+                (?: \s* (?:\(\s*)+ | \s+ )
+            )
+            (
+                # filehandle name - uppercase only
+                (?!')(?:(?:::|'?[^\W\d\p{Lower}])[^\W\p{Lower}]*)++
+                (?!\w|::|'[^\W\d]|\s*\()
+            )
+    name: meta.function.filehandle.perl
     captures:
-        1: { name: keyword.function.filehandle.perl }
+        1: { name: keyword.function.perl }
         2: { name: constant.language.filehandle.perl }
         3: { name: constant.language.filehandle.perl }
+        4: { name: keyword.function.perl }
+        6: { name: constant.language.filehandle.perl }
+-
+    match: |-
+        \b(?:ARGV|ARGVOUT|STDERR|STDIN|STDOUT|DATA)(?!\w|::|'[^\W\d])
+    name: constant.language.filehandle.perl
+-
     match: |
         (?x)
-        \b (accept|pipe|socketpair) (?!\w|::)
-        #
-        # open parens or space
-        (?: \s+ | \s*(?: \(\s* )+ )
-        #
         (?:
-            # filehandle name - copied from variable
-            (?![\w&&\P{Lower}]*+[\p{Lower}]) # can't have lowercase letter
-            ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*)
-            (?!\w|::|\s*\()
+            \b (?:
+                abs|accept|alarm|and|atan2|bind|binmode|bless|break|caller|chdir|chmod|chomp|chop|chown|chr|chroot|close|closedir|cmp|connect|continue|cos|crypt|dbmclose|dbmopen|default|defined|delete|die|do|dump|each|else|elsif|endgrent|endhostent|endnetent|endprotoent|endpwent|endservent|eof|eq|eval|evalbytes|exec|exists|exit|exp|fc|fcntl|fileno|flock|for|foreach|fork|format|formline|ge|getc|getgrent|getgrgid|getgrnam|gethostbyaddr|gethostbyname|gethostent|getlogin|getnetbyaddr|getnetbyname|getnetent|getpeername|getpgrp|getppid|getpriority|getprotobyname|getprotobynumber|getprotoent|getpwent|getpwnam|getpwuid|getservbyname|getservbyport|getservent|getsockname|getsockopt|given|glob|gmtime|goto|grep|gt|hex|if|index|int|ioctl|join|keys|kill|last|lc|lcfirst|le|length|link|listen|local|localtime|lock|log|lstat|lt|m|map|mkdir|msgctl|msgget|msgrcv|msgsnd|my|ne|next|no|not|oct|open|opendir|or|ord|our|pack|package|pipe|pop|pos|print|printf|prototype|push|q|qq|qr|quotemeta|qw|qx|rand|read|readdir|readline|readlink|readpipe|recv|redo|ref|rename|require|reset|return|reverse|rewinddir|rindex|rmdir|s|say|scalar|seek|seekdir|select|semctl|semget|semop|send|setgrent|sethostent|setnetent|setpgrp|setpriority|setprotoent|setpwent|setservent|setsockopt|shift|shmctl|shmget|shmread|shmwrite|shutdown|sin|sleep|socket|socketpair|sort|splice|split|sprintf|sqrt|srand|stat|state|study|sub|substr|symlink|syscall|sysopen|sysread|sysseek|system|syswrite|tell|telldir|tie|tied|time|times|tr|truncate|uc|ucfirst|umask|undef|unless|unlink|unpack|unshift|untie|until|use|utime|values|vec|wait|waitpid|wantarray|warn|when|while|write|x|xor|y
+            )
+            |
+            (?<!\w) -[ABCMORSTWXbcdefgkloprstuwxz]
         )
-        (?!\w|::)
-        #
-        \s*,\s*
-        # second filehandle name
-        (?![\w&&\P{Lower}]*+[\p{Lower}]) # can't have lowercase letter
-        ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*)
-        (?!\w|::|\s*\()
-    name: meta.function.filehandle.two.perl
--
-    captures:
-        1: { name: keyword.function.filehandle.perl }
-        2: { name: constant.language.filehandle.perl }
-    match: |
-        (?x)
-        # all of these functions take a bareword as the first argument
-        \b (accept|bind|binmode|chdir|close|closedir|connect|eof|fcntl|fileno|flock|formline|getc|getpeername|getsockname|getsockopt|ioctl|listen|lstat|open|opendir|pipe|print|printf|read|readdir|readline|recv|rewinddir|say|seek|seekdir|select|send|setsockopt|shutdown|socket|socketpair|stat|sysopen|sysread|sysseek|syswrite|tell|telldir|truncate|write) (?!\w|::)
-        #
-        (?:
-            # open parens or space
-            (?: \s+ | \s*(?: \(\s* )+ )
-            #
-            # filehandle name - copied from variable
-            (?![\w&&\P{Lower}]*+[\p{Lower}]) # can't have lowercase letter
-            ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*)
-            (?!\w|::|\s*\()
-        )?
-    name: meta.function.filehandle.perl
--
-    match: |-
-        \b(ARGV|ARGVOUT|STDERR|STDIN|STDOUT|DATA)(?!\w|::)
-    name: constant.language.filehandle.keyword.perl
--
-    match: |-
-        \b(abs|accept|alarm|and|atan2|bind|binmode|bless|break|caller|chdir|chmod|chomp|chop|chown|chr|chroot|close|closedir|cmp|connect|continue|cos|crypt|dbmclose|dbmopen|default|defined|delete|die|do|dump|each|else|elsif|endgrent|endhostent|endnetent|endprotoent|endpwent|endservent|eof|eq|eval|evalbytes|exec|exists|exit|exp|fc|fcntl|fileno|flock|for|foreach|fork|format|formline|ge|getc|getgrent|getgrgid|getgrnam|gethostbyaddr|gethostbyname|gethostent|getlogin|getnetbyaddr|getnetbyname|getnetent|getpeername|getpgrp|getppid|getpriority|getprotobyname|getprotobynumber|getprotoent|getpwent|getpwnam|getpwuid|getservbyname|getservbyport|getservent|getsockname|getsockopt|given|glob|gmtime|goto|grep|gt|hex|if|index|int|ioctl|join|keys|kill|last|lc|lcfirst|le|length|link|listen|local|localtime|lock|log|lstat|lt|m|map|mkdir|msgctl|msgget|msgrcv|msgsnd|my|ne|next|no|not|oct|open|opendir|or|ord|our|pack|package|pipe|pipe|pop|pos|print|printf|prototype|push|q|qq|qr|quotemeta|qw|qx|rand|read|readdir|readline|readlink|readpipe|recv|redo|ref|rename|require|reset|return|reverse|rewinddir|rindex|rmdir|s|say|scalar|seek|seekdir|select|semctl|semget|semop|send|setgrent|sethostent|setnetent|setpgrp|setpriority|setprotoent|setpwent|setservent|setsockopt|shift|shmctl|shmget|shmread|shmwrite|shutdown|sin|sleep|socket|socketpair|socketpair|sort|splice|split|sprintf|sqrt|srand|stat|state|study|sub|substr|symlink|syscall|sysopen|sysread|sysseek|system|syswrite|tell|telldir|tie|tied|time|times|tr|truncate|uc|ucfirst|umask|undef|unless|unlink|unpack|unshift|untie|until|use|utime|values|vec|wait|waitpid|wantarray|warn|when|while|write|x|xor|y)(?!\w|::)
+        (?!\w|::|'[^\W\d])
     name: keyword.function.perl
 -
-    captures:
-        1: { name: constant.language.package.perl }
-        2: { name: punctuation.definition.operator.arrow.perl }
-        3: { name: support.function.method.perl }
     match: |
         (?x)
-        # bareword - copied from variable
-        ((?<![\w:])(?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*(?![\w:]) \s*)?
+        # class name
+        (\g<2>)?
+        -> \s*
         #
-        (->) \s*
-        #
-        # bareword - copied from variable
-        ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*(?![\w:]))?
+        # method name
+        ((?!')(?:(?:::|'?[^\W\d])\w*)++)
     name: meta.operator.arrow.perl
+    captures:
+        1: { name: constant.language.package.perl }
+        2: { name: support.function.method.perl }
 -
     match: |
         (?xi)
-        \b(0b[01_]+)(?!\w)
+        \b(?:0b[01_]*)(?!\w)
     name: punctuation.definition.number.binary.perl
 -
     match: |
         (?xi)
-        \b(0x[\d_a-f]+)(?!\w)
+        \b(?:0x[\h_]*)(?!\w)
     name: punctuation.definition.number.hex.perl
 -
     match: |
         (?xi)
-        \b(0[0-7_]+)(?!\w)
+        \b(?:0[0-7_]+)(?!\w)
     name: punctuation.definition.number.octal.perl
+-
+    match: |
+        (?x)
+        \b (?:
+            v (\d[\d_]*) (\.\d[\d_]*)* # v with 1 or more digit groups
+            |
+            (?!0[\d_]) \g<1> \g<2>{2,} # no v with 3 or more digit groups
+        )
+        (?!\w)
+    name: string.other.version.perl
 -
     match: |
         (?xi)
         (?:
             (?:
                 # start with digit
-                \b (?:
-                    [1-9] [\d_]* \.?
-                    |
-                    # if the digit is 0 it must have a point after it otherwise its octal
-                    0 (?: \. | (?![\d_]) )
-                )
+                \b (?!0[\d_]) \d[\d_]*+ \.?
                 |
                 # start with point
                 \B \. \d
             )
             [\d_]*
-            (?: e [+-]? [\d_]+ )?  # possible exponent
+            (?: e [+-]? [\d_]* )?  # possible exponent
         )
         (?!\w)
     name: punctuation.definition.number.float.perl
 -
-    match: |
-        (?x)
-        \b (
-            v \d[\d_]+ (?:\.\d[\d_]+)*  # v with 1 or more digit groups
-            |
-            (?:0\b | [1-9]) (?:\.\d[\d_]+){2,} # no v with 3 or more digit groups
-        )
-        (?!\w)
-    name: string.number.version.perl
--
-    match: |
-        (?x)
-        (?:\b\d|\B\.\d)(?:\.(?!\.)|\w+)*
+    match: |-
+        (?:\b\d|\B\.\d)\w*
     name: invalid.illegal.number.perl
 -
-    captures:
-        1: { name: keyword.operator.filetest.perl }
-        2: { name: constant.language.filehandle.perl }
-    match: |
-        (?x)
-        (?<!\w) (-[rwxoRWXOezsfdlpSbctugkTBMAC]) (?!\w|::)
-        #
-        (?:
-            # open parens or space
-            (?: \s+ | \s*(?: \(\s* )+ )
-            #
-            # filehandle name - copied from variable
-            (?![\w&&\P{Lower}]*+[\p{Lower}]) # can't have lowercase letter
-            ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*)
-            (?!\w|::|\s*\()
-        )?
-    name: meta.operator.filetest.perl
--
     match: |-
-        (?<!\w)-[\w&&\D]\w*(?!\w|::)
-    name: constant.language.string.perl
--
-    match: |-
-        \b([\w&&\D&&\P{Lower}][\w&&\P{Lower}]*):(?!:)
+        \b[^\W\d\p{Lower}][^\W\p{Lower}]*+:(?!:)
     name: constant.language.label.perl
 -
-    captures:
-        1: { name: support.function.control.perl }
-        2: { name: constant.language.package.perl }
-    match: |
-        (?x)
-        \b (
-            # any name
-            (?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*
-            (?!\w|::)
-        )
-        \s+
-        # not a version number
-        (?!(?:v\d+(?>\.\d+)*)(?!\w|::))
-        #
-        # followed by filehandle - copied from variable
-        (?=[\w:'&&\P{Lower}]*+[\p{Lower}]) # must have a lowercase letter
-        (?=[\w:'&&\P{Upper}]*+[\p{Upper}]) # must have an uppercase letter
-        ((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*)
-        (?!\w|::|\()
-    name: meta.class.perl
--
     match: |-
-        (?<!\w|::)((?:(?:::)+|[\w&&\D])\w*(?:(?:::|'[\w&&\D])\w*)*)(?!\w|::)
+        (?<!\w)(?!')(?:(?:::|'?[^\W\d])\w*)+
     name: support.function.bareword.perl
+
+################################################################################
+
 repository:
-    ampersand_sub:
+<%
+sub quote_characters {
+    my ($heredoc) = @_;
+    {
+        $i = ord '!' if !$i;
+        $_ = chr $i++;
+        $i %= 0x80 + ($heredoc ? 1 : 0);
+        return if !$i;
+        if ($i == 0x80) {
+            $open = $close = $bopen = $bclose = "";
+        }
+        else {
+            redo if /[\w\s]/;
+            $open = $close = $bopen = $bclose = $_;
+            tr/(<[{//cd for $bopen, $bclose;
+            tr/(<[{/)>]}/ for $close, $bclose;
+            $_ = quotemeta for $open, $close, $bopen, $bclose;
+        }
+    }
+    return 1;
+}
+
+sub bracket_characters {
+    return $i = 0 if $i >= 4;
+    $open  = $bopen  = quotemeta +(qw' ( < [ { ')[$i];
+    $close = $bclose = quotemeta +(qw' ) > ] } ')[$i];
+    $i++;
+    return 1;
+}
+
+sub recursive_brackets {
+    my ($name) = @_;
+    if ($bopen) {
+        return << "";
+            -
+                { begin: '$bopen', end: '$bclose', patterns: [ include: '#$name' ] }
+
+    }
+}
+
+sub quote_begin_end {
+    if ($open) {
+        return <<"";
+            begin: |-
+                (?<=$open)
+            end: |-
+                (?=$close)
+
+    }
+    else {
+        return <<'';
+            begin: '^'
+            end: '\n|(?<=\n)'
+
+    }
+}
+
+sub e {
+    my ($s) = @_;
+    for ($s) {
+        if ($open or $close) {
+            s/([$open$close])/\\$1/g;
+        }
+        return quotemeta;
+    }
+}
+
+%>\
+    single:
+        patterns:
+        % while (quote_characters) {
+        -
+            <%= quote_begin_end =%>
+            patterns:
+            -
+                match: |-
+                    (\\)[<%= $open.$bclose %>\\]
+                captures:
+                    1: { name: constant.character.escape.perl }
+            <%= recursive_brackets "single" =%>
+        % }
+    double:
+        patterns:
+        % while (quote_characters 1) {
+        -
+            <%= quote_begin_end =%>
+            patterns:
+            -
+                match: |
+                    (?x)
+                    (?: <%=e '$'%> \s* | <%=e '@'%> )
+                    (?: \d+ | \w+ )
+                    |
+                    <%=e '$'%> \s*
+                name: variable.other.readwrite.global.perl
+            -
+                match: |
+                    (?x)
+                    (\\ (?:
+                        x(?: \h{1,2} <%#| {(?!__)[_\h]*}%>)
+                        |
+                        #o{(?!__)[_0-7]*}
+                        #|
+                        [0-7]{1,3}
+                        |
+                        #N{(?: (?!U\+)[^}]* | U\+(?:_?\h+)+ )}
+                        #|
+                        #c\p{ASCII}
+                        #|
+                        \p{Alnum}
+                    ))
+                    |
+                    (\\)[\d\D]
+                captures:
+                    1: { name: constant.character.escape.perl }
+                    2: { name: constant.character.escape.perl }
+            <%= recursive_brackets "double" =%>
+        % }
+    double_or_single:
         patterns:
         -
-            match: |-
-                &&
-            name: punctuation.definition.operator.boolean.and
+            begin: |-
+                (?<=')
+            end: |-
+                (?=')
+            contentName: string.quoted.single.perl
+            patterns:
+            - include: '#single'
         -
-            match: |
-                (?x)
-                [&]
-                (
-                    [^{\w\s] (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    [^{\w\s]
-                    \}
-                )
-            name: support.function.ampersand.punctuation
+            begin: |-
+                (?<=(\()|(<)|(\[)|({)|([^[^!-~]\w\s]))
+            end: |-
+                (?=(?!\1)\)|(?!\2)>|(?!\3)\]|(?!\4)\}|[\5[&&]])
+            contentName: string.quoted.double.perl
+            patterns:
+            - include: '#double'
+    double_or_single_regexp:
+        patterns:
         -
-            match: |
-                (?x)
-                [&]
-                (?:
-                    (?: ::)* \d+ (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    (?: ::)* \d+
-                    \s* \}
-                )
-            name: support.function.ampersand.digits
+            begin: |-
+                (?<=')
+            end: |-
+                (?=')
+            contentName: string.regexp.perl
+            patterns:
+            - include: '#single'
         -
-            match: |
-                (?x)
-                [&]
-                (?:
-                    \^[\w&&\D&&\P{Lower}] \b
-                |
-                    \{
-                    \^[\w&&\D&&\P{Lower}]\w*
-                    \}
-                )
-            name: support.function.ampersand.caret
-        -
-            match: |
-                (?x)
-                [&]
-                (?:
-                    (?:
-                        (?: ::)+
-                    |
-                        [\w&&\D]
-                    ) \w*
-                    (?:
-                        (?:
-                            ::
-                        |
-                            '[\w&&\D]
-                        ) \w*
-                    )*
-                    (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    (?:
-                        (?: ::)+
-                    |
-                        [\w&&\D]
-                    ) \w*
-                    (?:
-                        (?:
-                            ::
-                        |
-                            '[\w&&\D]
-                        ) \w*
-                    )*
-                    \s* \}
-                )
-            name: support.function.ampersand.normal
-    escaped_char:
-        match: |-
-            \\.
-        name: string.character.escape.perl
+            begin: |-
+                (?<=(\()|(<)|(\[)|({)|([^[^!-~]\w\s]))
+            end: |-
+                (?=(?!\1)\)|(?!\2)>|(?!\3)\]|(?!\4)\}|[\5[&&]])
+            contentName: string.regexp.perl
+            patterns:
+            - include: '#double'
     line_comment:
-        patterns:
-        -
-            captures:
-                1: { name: comment.line.number-sign.perl }
-                2: { name: punctuation.definition.comment.perl }
-            match: |-
-                ^((#).*$\n?)
-            name: meta.comment.full-line.perl
-        -
-            captures:
-                1: { name: punctuation.definition.comment.perl }
-            match: |-
-                (#).*$\n?
-            name: comment.line.number-sign.perl
-    nested_braces:
-        begin: '\{'
+        match: |-
+            (#)[\d\D]*
+        name: comment.line.number-sign.perl
         captures:
-            1: { name: punctuation.section.scope.perl }
-        end: '\}'
-        patterns:
-        - include: '#escaped_char'
-        - include: '#nested_braces'
-    nested_braces_interpolated:
-        begin: '\{'
-        captures:
-            1: { name: punctuation.section.scope.perl }
-        end: '\}'
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_braces_interpolated'
-    nested_brackets:
-        begin: '\['
-        captures:
-            1: { name: punctuation.section.scope.perl }
-        end: ']'
-        patterns:
-        - include: '#escaped_char'
-        - include: '#nested_brackets'
-    nested_brackets_interpolated:
-        begin: '\['
-        captures:
-            1: { name: punctuation.section.scope.perl }
-        end: ']'
-        patterns:
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_brackets_interpolated'
-    nested_ltgt:
-        begin: '<'
-        captures:
-            1: { name: punctuation.section.scope.perl }
-        end: '>'
-        patterns:
-        - include: '#nested_ltgt'
-    nested_ltgt_interpolated:
-        begin: '<'
-        captures:
-            1: { name: punctuation.section.scope.perl }
-        end: '>'
-        patterns:
-        - include: '#variable'
-        - include: '#nested_ltgt_interpolated'
-    nested_parens:
-        begin: '\('
-        captures:
-            1: { name: punctuation.section.scope.perl }
-        end: '\)'
-        patterns:
-        - include: '#escaped_char'
-        - include: '#nested_parens'
-    nested_parens_interpolated:
-        begin: '\('
-        captures:
-            1: { name: punctuation.section.scope.perl }
-        end: '\)'
-        patterns:
-        -
-            comment: This is to prevent thinks like qr/foo$/ to treat $/ as a variable
-            match: |-
-                \$(?=[^\s\w\'\{\[\(\<])
-            name: keyword.control.anchor.perl
-        - include: '#escaped_char'
-        - include: '#variable'
-        - include: '#nested_parens_interpolated'
-    other_sigil:
-        patterns:
-        -
-            match: |
-                (?x)
-                [%*]
-                (
-                    [^{\w\s] (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    [^{\w\s]
-                    \}
-                )
-            name: support.other.sigil.punctuation
-        -
-            match: |
-                (?x)
-                [%*]
-                (?:
-                    (?: ::)* \d+ (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    (?: ::)* \d+
-                    \s* \}
-                )
-            name: support.other.sigil.digits
-        -
-            match: |
-                (?x)
-                [%*]
-                (?:
-                    \^[\w&&\D&&\P{Lower}] \b
-                |
-                    \{
-                    \^[\w&&\D&&\P{Lower}]\w*
-                    \}
-                )
-            name: support.other.sigil.caret
-        -
-            match: |
-                (?x)
-                [%*]
-                (?:
-                    (?:
-                        (?: ::)+
-                    |
-                        [\w&&\D]
-                    ) \w*
-                    (?:
-                        (?:
-                            ::
-                        |
-                            '[\w&&\D]
-                        ) \w*
-                    )*
-                    (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    (?:
-                        (?: ::)+
-                    |
-                        [\w&&\D]
-                    ) \w*
-                    (?:
-                        (?:
-                            ::
-                        |
-                            '[\w&&\D]
-                        ) \w*
-                    )*
-                    \s* \}
-                )
-            name: support.other.sigil.normal
+            1: { name: punctuation.definition.comment.perl }
     pod:
         patterns:
         -
             begin: |-
-                ^(=)(?=\w)(?!cut\b)
-            captures:
-                0: { name: punctuation.definition.comment.perl }
+                ^(?==(?=\p{Alpha})(?!cut(?!\p{Alpha})))
             end: |-
-                ^(=cut)\b
+                ^=cut(?!\p{Alpha})[\d\D]*
             name: comment.block.documentation.pod
             patterns:
             -
                 match: '\t+'
-                name: invalid.pod.tab
-    variable:
+                name: invalid.deprecated.tab.pod
+        -
+            match: |-
+                ^=cut(?!\p{Alpha})[\d\D]*
+            name: comment.block.documentation.pod
+    heredoc_1:
         patterns:
         -
-            match: |
+            begin: |
                 (?x)
-                [@$] \s*
-                (
-                    [^{\w\s] (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    [^{\w\s]
-                    \}
-                )
-            name: support.other.variable.perl.punctuation
-        -
-            match: |
-                (?x)
-                [@$] \s*
+                (<<)
                 (?:
-                    (?: ::)* \d+ (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    (?: ::)* \d+
-                    \s* \}
-                )
-            name: support.other.variable.perl.digits
-        -
-            match: |
-                (?x)
-                [@$] \s*
-                (?:
-                    \^[\w&&\D&&\P{Lower}] \b
-                |
-                    \{
-                    \^[\w&&\D&&\P{Lower}]\w*
-                    \}
-                )
-            name: support.other.variable.perl.caret
-        -
-            match: |
-                (?x)
-                (?: [@$] \s* | \$\# )
-                (?:
-                    (?:
-                        (?: ::)+
+                    (\w+)
                     |
-                        [\w&&\D]
-                    ) \w*
-                    (?:
-                        (?:
-                            ::
-                        |
-                            '[\w&&\D]
-                        ) \w*
-                    )*
-                    (?!\w|::)
-                |
-                    # same thing but with braces
-                    \{ \s*
-                    (?:
-                        (?: ::)+
+                    \s* " ([^"]*) "
                     |
-                        [\w&&\D]
-                    ) \w*
-                    (?:
-                        (?:
-                            ::
-                        |
-                            '[\w&&\D]
-                        ) \w*
-                    )*
-                    \s* \}
-                )
-            name: support.other.variable.perl.normal
+                    \s* ` ([^`]*) `
+                ) .* \n?
+            end: |-
+                ^(\2\3)(\4)$
+            name: meta.heredoc.perl
+            beginCaptures:
+                1: { name: punctuation.definition.heredoc.perl }
+                2: { name: string.quoted.double.perl }
+                3: { name: string.quoted.double.perl }
+                4: { name: string.interpolated.perl }
+            contentName: string.unquoted.perl
+            endCaptures:
+                1: { name: string.quoted.double.perl }
+                2: { name: string.interpolated.perl }
+            patterns:
+            - include: '#double'
+        -
+            begin: |
+                (?x)
+                (<<)
+                (?:
+                    \\ (\w+)
+                    |
+                    \s* ' ([^']*) '
+                ) .* \n?
+            end: |-
+                ^(\2\3)$
+            name: meta.heredoc.single.perl
+            beginCaptures:
+                1: { name: punctuation.definition.heredoc.perl }
+                2: { name: string.quoted.single.perl }
+                3: { name: string.quoted.single.perl }
+            contentName: string.unquoted.perl
+            endCaptures:
+                1: { name: string.quoted.single.perl }
     regex_quantifier_curly:
         patterns:
         -
             match: |
                 (?x)
                 {(?:
-                    \d+,
+                    \d+,?
                     |
                     (?>0*(?=\d)) # skip 0s
-                    (?<balanced_digits>
+                    (
                         \d
-                        (?:
-                            \g<balanced_digits>
-                            |             # can't get any more balanced digits so we're innermost
-                            , (?![^,]*+,) # only 1 comma is allowed
-                            (?>0*(?=\d))  # skip 0s after comma
-                        )?+
+                        \g<-1>
                         \d
+                        |               # can't get any more balanced digits so we're innermost
+                        , (?>0*(?=\d))  # skip 0s after comma
                     )
                     \d+
                 )}
@@ -1366,21 +883,18 @@ repository:
         -
             begin: |
                 (?x)
-                (?=
-                    {
+                (?={
                     (?>0*(?=\d))<%= '(\d)' x $n %> , (?>0*(?=\d))\d{<%= $n %>}
-                    }
-                )
+                })
             end: |
                 (?x)
                 ({
-                \d*+ , (?>0*(?=\d))
+                \d* , (?>0*(?=\d))
                 <%= join "", map "(?:[^0-\\$_]|\\$_ ", 1..$n
                 %><%= ')' x $n %>
                 \d*
-                }) | ({\d*,\d*})
+                }) | {\d*,\d*}
             endCaptures:
                 1: { name: string.quoted.double.perl }
-                2: { name: constant.language.nope }
         % }
 ...

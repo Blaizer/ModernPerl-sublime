@@ -292,7 +292,7 @@
 "$-->{-aa}"
 "$-[-0]"
 "$-{-a}"
-"$\"
+"$\" #"
 "${\}"
 "$^"
 "${^}"
@@ -312,6 +312,7 @@
 
 # even harder $$, ${}
 # @, @name->, @name[] @name{}, @@, @{}
+# ->$* ->@* ->@[] ->@{}
 # $ and @ interactions!
 # ESCAPES D: D: D:
 # qq\\ qq$$ qq@@ qq:: qq'' qq^^ qq-- qq[] qq{} qq]] qq}} qq() qq<>
@@ -325,7 +326,31 @@ qq\\                                               #\#
 qq\\\                                              #\#
 qq\\\\                                             #\#
 
-single quoted: '' q qw qx << s
-double quoted: "" qq `` qw qx << s <>
-regex: m // ?? s qr
-transliteration: tr y
+qx'\'hjk \f \\\- \\\\\' jmk\''
+q(asd \(  \) ()() ( ((\)\())   \)  \(   )  ddd)
+
+"we got\ escapes\! \n \1 \9 ...yup"
+"Yeah... \Qno way $I'm @messing with these\E... Too hard"
+"octals... \0000 \7777 \80344 \0yeah \o{} \o{_} \o{_12_} but not \o{ } \o{1f}  "
+"\x{} and \x{_} and \x{_dead_BEEF01_} \xA2f \x5n \x000 \xg but not \x{ } \x{boob}"
+"unicode... \N{U+0} \N{U+0f0af3} \N{U+_0_0} and \N{Everyth1ng ACC##PT*{([ED\}? Yeah."
+"but not unicode \N{U+} \N{U+_} \N{U+__} \N{U+0_} \N{U+0__0}"
+"this shouldn't work: \N{Charname with quote    " in it}" #}"
+"this shouldn't work: \N{Charname with quote  \\" in it}" #}"
+"but this should:     \N{Charname with quote   \" in it}"
+"but this should:     \N{Charname with quote \\\" in it}"
+"control chars \c@ \cA \ca \c\ all work"
+"weird use of \c: \c"   #"
+"weird use of \c: \c\"" #"
+"weird use of \c: \c\\" #"
+"weird use of \c: \c\\n" #"
+
+qq$inside this \$foo is actually a variable$
+qq@inside this \@foo is actually a variable@
+
+# no interpolation: <<
+# single quoted: '' q qw qx s
+# double quoted: "" qq `` qx <> << s
+# regex: m // qr s
+# transliteration: tr y
+# format: format
