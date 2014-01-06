@@ -72,6 +72,16 @@ patterns:
     captures:
         1: { name: support.function.ampersand.perl }
         2: { name: punctuation.definition.var.perl }
+-
+    match: |-
+        (-?\b[^\W\d]\w*+)\s*+=>
+    captures:
+        1: { name: constant.language.string.perl }
+    comment: >-
+        Turns out this operator needs to be really high up.
+        It always autoquotes word characters. It even autoquotes q=>=,
+        making it almost impossible to have a literal > at position 0 of a q==!
+        There is a way, though! CORE::q=>=. There's always a way!
 <%
 for (
     [ 'qw?', "(')", 'meta.string.q.perl',  'string.quoted.single.perl', 'single' ],
@@ -378,11 +388,6 @@ for (
         |
             \g<-1> \s*
         )}
-    captures:
-        1: { name: constant.language.string.perl }
--
-    match: |-
-        (-?\b[^\W\d]\w*+)\s*+=>
     captures:
         1: { name: constant.language.string.perl }
 -
