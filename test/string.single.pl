@@ -36,3 +36,9 @@ q(asd ( \) ( ) \( ) )
 # These are the problem characters in end patterns
 q#aa\\\#\\aa#
 q&aa\\\&\\aa&
+
+CORE::q/yes/
+CORE::q~yes~
+CORE::q(yes)
+CORE::q<yes>
+CORE::q:yes:

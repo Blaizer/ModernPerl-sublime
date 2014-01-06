@@ -226,3 +226,25 @@ tr [tr]
 # these don't exhibit anything weird though
 tr[tr][tr]tr]
 tr[tr][tr]tr[
+
+# the only thing that can go wrong with this is it doing different things with characters before and after :
+CORE::s
+CORE::s/beep/boop/c
+CORE::s~dude~this~c
+CORE::s:no:way:c
+CORE::s(early)
+CORE::s<late>
+
+CORE::tr
+CORE::tr/beep/boop/c
+CORE::tr~dude~this~c
+CORE::tr:no:way:c
+CORE::tr(early)
+CORE::tr<late>
+
+CORE::y
+CORE::y/beep/boop/c
+CORE::y~dude~this~c
+CORE::y:no:way:c
+CORE::y(early)
+CORE::y<late>

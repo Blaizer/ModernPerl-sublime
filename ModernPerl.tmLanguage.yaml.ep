@@ -147,7 +147,7 @@ for (
 -
     begin: |
         (?x)
-        \b (<%= $keyword %>) \s*
+        \b ( (?:CORE::)? <%= $keyword %> ) \s*
         (?:
             ( (\() | (<) | (\[) | ({) ) | ([^[^!-~]\w\s])
         )
@@ -204,14 +204,14 @@ for (
 % sub quote_characters;
 <%
 for (
-    [ 's',    'meta.regexp.s.perl', 'double_or_single_regexp', 'double_or_single', 'acdegilmoprsux' ],
-    [ 'tr|y', 'meta.tr.perl',       'double_or_single',        'double_or_single',           'cdrs' ],
+    [ 's',        'meta.regexp.s.perl', 'double_or_single_regexp', 'double_or_single', 'acdegilmoprsux' ],
+    [ '(?:tr|y)', 'meta.tr.perl',       'double_or_single',        'double_or_single',           'cdrs' ],
 ) {
     my ($keyword, $meta, $first_include, $second_include, $modifiers) = @$_;
 %>\
 -
     begin: |-
-        (?x) \b (?= (<%= $keyword %>) \s* ([^[^!-~]\w\s]) )
+        (?x) \b (?= ( (?:CORE::)? <%= $keyword %> ) \s* ([^[^!-~]\w\s]) )
     end: |-
         (?!\b\1\s*\2)
     name: <%= $meta %>
@@ -220,7 +220,7 @@ for (
     % if ($bopen) {
     -
         begin: |-
-            (?x) (<%= $keyword %>) \s* (<%= $bopen %>)
+            (?x) ( (?:CORE::)?+ \w+ ) \s* (<%= $bopen %>)
         end: |
             (?x)
             (?<!<%= $bopen %>)(?!<%= $bclose %>)
@@ -323,7 +323,7 @@ for (
     % } else {
     -
         begin: |-
-            (?x) (?= \w+ \s* <%= $open %> )
+            (?x) (?= (?:CORE::)?+ \w+ \s* <%= $open %> )
         end: |-
             (?x) (<%= $open %>) ([<%= $modifiers %>]*) \w*
         endCaptures:
@@ -332,7 +332,7 @@ for (
         patterns:
         -
             begin: |-
-                (?x) (\w+) \s* (<%= $open %>)
+                (?x) ( (?:CORE::)?+ \w+ ) \s* (<%= $open %>)
             end: |
                 (?x)
                 ((<%= $open %>))
@@ -392,12 +392,12 @@ for (
         1: { name: constant.language.string.perl }
 -
     match: |-
-        \b__(?:FILE|LINE|PACKAGE|SUB)__(?!\w|::|'[^\W\d])
-    name: constant.language.compiler-token.perl
+        \b(?:CORE::)?__(?:FILE|LINE|PACKAGE|SUB)__(?!\w|::|'[^\W\d])
+    name: keyword.function.compiler.perl
 -
     match: |
         (?x)
-        \b (dump|goto|last|next|redo)
+        \b ( (?:CORE::)? (?:dump|goto|last|next|redo) )
         #
         (?:
             # open parens or space
@@ -414,38 +414,38 @@ for (
         2: { name: constant.language.label.perl }
 -
     match: |-
-        \b(?:break|continue|default|dump|else|elsif|for|foreach|given|goto|if|last|next|redo|return|unless|until|when|while)(?!\w|::|'[^\W\d])
+        \b(?:CORE::)?(?:break|continue|default|dump|else|elsif|for|foreach|given|goto|if|last|next|redo|return|unless|until|when|while)(?!\w|::|'[^\W\d])
     name: keyword.control.perl
 -
     match: |-
-        \b(?:do|eval)(?=\s*{)
+        \b(?:CORE::)?(?:do|eval)(?=\s*{)
     name: keyword.control.perl
 -
     match: |-
-        \b(?:local|my|our|state)(?!\w|::|'[^\W\d])
+        \b(?:CORE::)?(?:local|my|our|state)(?!\w|::|'[^\W\d])
     name: storage.modifier.perl
     captures:
         0: { name: variable.parameter.storage.modifier.perl }
 -
     match: |-
-        \b(?:m|q|qq|qr|qw|qx|s|tr|y)\b
+        \b(?:CORE::)?(?:m|q|qq|qr|qw|qx|s|tr|y)\b
     name: keyword.operator.perl
 -
     match: |-
-        \b(?:and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::|'[^\W\d])
+        \b(?:CORE::)?(?:and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::|'[^\W\d])
     name: keyword.operator.perl
 -
     begin: |-
-        \b__(?:END|DATA)__(?!\w|::|'[^\W\d])
+        \b(?:CORE::)?__(?:END|DATA)__(?!\w|::|'[^\W\d])
     end: |-
-        (?!)
+        (?!) # the end has no end
     name: comment.block.other.perl
     patterns:
     - include: '#pod'
 -
     begin: |
         (?x)
-        \b (format)
+        \b ( (?:CORE::)? format )
         #
         # format picture - copied from variable
         (?: \s+
@@ -469,7 +469,7 @@ for (
         # this pattern will match until the begin/end pattern above matches
         # so that format PICTURE highlights before you put the = in
         #
-        \b (format) \s+
+        \b ( (?:CORE::)? format ) \s+
         #
         # format picture - copied from variable
         ((?!')(?:(?:::|'?[^\W\d])\w*)++)
@@ -481,7 +481,7 @@ for (
     match: |
         (?x)
         # autoquoting keywords
-        \b (package|use|require|no) \s+
+        \b ( (?:CORE::)? (?:package|use|require|no) ) \s+
         (
             # not a version number
             (?!v\d)
@@ -497,7 +497,7 @@ for (
     match: |
         (?x)
         \b (?:
-            (sub)
+            ( (?:CORE::)? sub )
         |
             # non-standard sub definitions
             (method|func|before|after|around|trigger|build|set)
@@ -522,7 +522,7 @@ for (
         4: { name: storage.type.method.perl }
 -
     match: |-
-        \b(?:AUTOLOAD|BEGIN|CHECK|END|INIT|UNITCHECK)(?!\w|::|'[^\W\d])
+        \b(?:CORE::)?(?:AUTOLOAD|BEGIN|CHECK|END|INIT|UNITCHECK)(?!\w|::|'[^\W\d])
     name: meta.function.perl
     captures:
         0: { name: entity.name.function.perl }
@@ -530,12 +530,12 @@ for (
     match: |
         (?x)
             # these functions can take two filehandles as arguments
-            \b (accept|pipe|socketpair) \g<5>
+            \b ( (?:CORE::)? (?:accept|pipe|socketpair) ) \g<5>
             (\g<6>) \s*,\s* (\g<6>)
         |
             # these functions take a filehandle as the first argument
             (
-                \b (?:accept|bind|binmode|chdir|close|closedir|connect|eof|fcntl|fileno|flock|formline|getc|getpeername|getsockname|getsockopt|ioctl|listen|lstat|open|opendir|pipe|print|printf|read|readdir|readline|recv|rewinddir|say|seek|seekdir|select|send|setsockopt|shutdown|socket|socketpair|stat|sysopen|sysread|sysseek|syswrite|tell|telldir|truncate|write)
+                \b (?:CORE::)? (?:accept|bind|binmode|chdir|close|closedir|connect|eof|fcntl|fileno|flock|formline|getc|getpeername|getsockname|getsockopt|ioctl|listen|lstat|open|opendir|pipe|print|printf|read|readdir|readline|recv|rewinddir|say|seek|seekdir|select|send|setsockopt|shutdown|socket|socketpair|stat|sysopen|sysread|sysseek|syswrite|tell|telldir|truncate|write)
             |
                 # filetest operators
                 (?<!\w) -[ABCMORSTWXbcdefgkloprstuwxz]
@@ -558,14 +558,10 @@ for (
         4: { name: keyword.function.perl }
         6: { name: constant.language.filehandle.perl }
 -
-    match: |-
-        \b(?:ARGV|ARGVOUT|STDERR|STDIN|STDOUT|DATA)(?!\w|::|'[^\W\d])
-    name: constant.language.filehandle.perl
--
     match: |
         (?x)
         (?:
-            \b (?:
+            \b (?:CORE::)? (?:
                 abs|accept|alarm|and|atan2|bind|binmode|bless|break|caller|chdir|chmod|chomp|chop|chown|chr|chroot|close|closedir|cmp|connect|continue|cos|crypt|dbmclose|dbmopen|default|defined|delete|die|do|dump|each|else|elsif|endgrent|endhostent|endnetent|endprotoent|endpwent|endservent|eof|eq|eval|evalbytes|exec|exists|exit|exp|fc|fcntl|fileno|flock|for|foreach|fork|format|formline|ge|getc|getgrent|getgrgid|getgrnam|gethostbyaddr|gethostbyname|gethostent|getlogin|getnetbyaddr|getnetbyname|getnetent|getpeername|getpgrp|getppid|getpriority|getprotobyname|getprotobynumber|getprotoent|getpwent|getpwnam|getpwuid|getservbyname|getservbyport|getservent|getsockname|getsockopt|given|glob|gmtime|goto|grep|gt|hex|if|index|int|ioctl|join|keys|kill|last|lc|lcfirst|le|length|link|listen|local|localtime|lock|log|lstat|lt|m|map|mkdir|msgctl|msgget|msgrcv|msgsnd|my|ne|next|no|not|oct|open|opendir|or|ord|our|pack|package|pipe|pop|pos|print|printf|prototype|push|q|qq|qr|quotemeta|qw|qx|rand|read|readdir|readline|readlink|readpipe|recv|redo|ref|rename|require|reset|return|reverse|rewinddir|rindex|rmdir|s|say|scalar|seek|seekdir|select|semctl|semget|semop|send|setgrent|sethostent|setnetent|setpgrp|setpriority|setprotoent|setpwent|setservent|setsockopt|shift|shmctl|shmget|shmread|shmwrite|shutdown|sin|sleep|socket|socketpair|sort|splice|split|sprintf|sqrt|srand|stat|state|study|sub|substr|symlink|syscall|sysopen|sysread|sysseek|system|syswrite|tell|telldir|tie|tied|time|times|tr|truncate|uc|ucfirst|umask|undef|unless|unlink|unpack|unshift|untie|until|use|utime|values|vec|wait|waitpid|wantarray|warn|when|while|write|x|xor|y
             )
             |
@@ -573,6 +569,12 @@ for (
         )
         (?!\w|::|'[^\W\d])
     name: keyword.function.perl
+-
+    match: |-
+        \b(?:ARGV|ARGVOUT|STDERR|STDIN|STDOUT|DATA)(?!\w|::|'[^\W\d])
+    name: constant.language.filehandle.perl
+    comment: >-
+        These aren't keywords, so CORE:: isn't applicable.
 -
     match: |
         (?x)
