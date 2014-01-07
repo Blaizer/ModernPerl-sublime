@@ -639,7 +639,7 @@ for (
     name: constant.language.label.perl
 -
     match: |-
-        (?!')(?:(?:::|'?[^\W\d])\w*)+
+        (?=[^[^\w:]\d])(?<!\w)(?:(?:::|'?[^\W\d])\w*)+
     name: support.function.bareword.perl
 
 ################################################################################
