@@ -422,10 +422,11 @@ for (
     name: keyword.control.perl
 -
     match: |-
-        \b(?:CORE::)?(?:local|my|our|state)(?!\w|::|'[^\W\d])
+        (\b(?:CORE::)?(?:local|my|our|state)(?!\w|::|'[^\W\d]))
     name: storage.modifier.perl
     captures:
-        0: { name: variable.parameter.storage.modifier.perl }
+        0: { name: variable.parameter.perl }
+        1: { name: variable.other.readwrite.global.perl }
 -
     match: |-
         \b(?:CORE::)?(?:m|q|qq|qr|qw|qx|s|tr|y)\b
