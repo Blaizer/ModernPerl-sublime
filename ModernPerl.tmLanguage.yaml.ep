@@ -447,36 +447,34 @@ for (
         (?x)
         \b ( (?:CORE::)? format )
         #
-        # format picture - copied from variable
-        (?: \s+
-            ((?!')(?:(?:::|'?[^\W\d])\w*)++)
-        )?
-        #
-        \s* = \s* $
-    end: |-
+        (?:
+            # format picture - copied from variable
+            (?: \s+
+                ((?!')(?:(?:::|'?[^\W\d])\w*)++)
+                (?= \s* (?:=\s*)? $ )
+            )
+        |
+            (?!\w|::|'[^\W\d])
+        )
+    end: |
+        (?x)
+        (?! \s* (?:=\s*)? $ )
+        |
         ^\.\s*$
     name: meta.format.perl
     beginCaptures:
         1: { name: keyword.function.perl }
         2: { name: constant.language.filehandle.picture.perl }
-    contentName: string.unquoted.format.perl
     patterns:
-    - include: '#line_comment'
-    - include: '#variable'
--
-    match: |
-        (?x)
-        # this pattern will match until the begin/end pattern above matches
-        # so that format PICTURE highlights before you put the = in
-        #
-        \b ( (?:CORE::)? format ) \s+
-        #
-        # format picture - copied from variable
-        ((?!')(?:(?:::|'?[^\W\d])\w*)++)
-        \s* $
-    captures:
-        1: { name: keyword.function.perl }
-        2: { name: constant.language.filehandle.picture.perl }
+    -
+        begin: |-
+            =\s*
+        end: |-
+            (?=^\.\s*$)
+        contentName: string.unquoted.format.perl
+        patterns:
+        - include: '#line_comment'
+        - include: '#variable'
 -
     match: |
         (?x)
