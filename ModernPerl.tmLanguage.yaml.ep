@@ -450,7 +450,7 @@ for (
         (?:
             # format picture - copied from variable
             (?: \s+
-                ((?!')(?:(?:::|'?[^\W\d])\w*)++)
+                ((?!')(?:(?:::|'?[^\W\d])\w*+)++)
                 (?= \s* (?:=\s*)? $ )
             )
         |
@@ -492,32 +492,40 @@ for (
         1: { name: keyword.control.perl }
         2: { name: constant.language.package.perl }
 -
-    match: |
+    begin: |
         (?x)
         \b (?:
             ( (?:CORE::)? sub )
         |
             # non-standard sub definitions
             (method|func|before|after|around|trigger|build|set)
-        ) (?!\w|::|'[^\W\d])
+        )
         #
         # sub name - copied from variable
         (?:
             \s+ (
-                (?!')(?:(?:::|'?[^\W\d])\w*)++
+                (?!')(?:(?:::|'?[^\W\d])\w*+)++
             )
-        )?
-        #
-        # prototype - can contain anything but brackets
-        (?:
-            \s* \( ([^()]*) \)
-        )?
+            |
+            (?!\w|::|'[^\W\d])
+        )
+    end: |
+        (?x)
+        (?! \s* [(] | \s* $ )
+        |
+        (?<= [)] )
     name: meta.function.perl
-    captures:
+    beginCaptures:
         1: { name: keyword.control.perl }
         2: { name: support.function.perl }
         3: { name: entity.name.function.perl }
-        4: { name: storage.type.method.perl }
+    patterns:
+    -
+        begin: '\('
+        end: '\)'
+        contentName: storage.type.method.perl
+        patterns:
+        - include: '#single'
 -
     match: |-
         \b(?:CORE::)?(?:AUTOLOAD|BEGIN|CHECK|END|INIT|UNITCHECK)(?!\w|::|'[^\W\d])
@@ -545,7 +553,7 @@ for (
             )
             (
                 # filehandle name - uppercase only
-                (?!')(?:(?:::|'?[^\W\d\p{Lower}])[^\W\p{Lower}]*)++
+                (?!')(?:(?:::|'?[^\W\d\p{Lower}])[^\W\p{Lower}]*+)++
                 (?!\w|::|'[^\W\d]|\s*\()
             )
     name: meta.function.filehandle.perl

@@ -29,7 +29,6 @@ Simply install this package with Package Control (or otherwise) and it should be
 
   * Recognize interpolated characters in double quoted strings
   * Recognize metacharacters in regexes
-  * Multi-line subroutine prototypes
   * Split up interpolation in repository more for better interpolation of `tr`, `format`, etc.
   * Support for multiple heredocs on one line
   * Further optimization and polish
