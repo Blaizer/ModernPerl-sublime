@@ -909,19 +909,14 @@ sub e {
             ({
             \d+ , (?>0*(?=\d))
             <%= join "\n" . " " x 12, map {
-                my $more_digits = '[&\1&\d]{%d,}';
-                $more_digits = sprintf $more_digits, $n - $_ + 2;
+                my $more_digits = sprintf '[&\1&\d]{%d,}', $n - $_ + 2;
 
-                my $greater_digit .= '[&\1&\d&&[^0-\1]]\d{%d}';
-                $greater_digit = sprintf $greater_digit, $n - $_;
+                my $greater_digit = sprintf '[&\1&\d&&[^0-\1]]\d{%d}', $n - $_;
 
-                my $full;
-                if ($_ < $n) {
-                    $full = "(?: $more_digits | $greater_digit | \\1";
-                }
-                else {
-                    $full = '(?: \d{2,} | [\d&&[^0-\1]] )';
-                }
+                my $full = $_ < $n ?
+                    "(?: $more_digits | $greater_digit | \\1"
+                :
+                    '(?: \d{2,} | [\d&&[^0-\1]] )';
 
                 $full =~ s/\\1/\\$_/g;
                 $full;
