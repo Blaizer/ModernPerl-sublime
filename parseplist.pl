@@ -4,7 +4,7 @@ parseplist.pl - parse plist files between XML and YAML
 
 =head1 SYNOPSIS
 
- perl parseplist.pl [OUTFILE] [INFILE]
+ perl parseplist.pl [OUTFILE [INFILE]]
  perl parseplist.pl OUTFILE.yaml [INFILE]
 
 =head1 OPTIONS
