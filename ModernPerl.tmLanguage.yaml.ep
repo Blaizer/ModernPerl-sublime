@@ -742,11 +742,16 @@ sub e {
             -
                 match: |
                     (?x)
-                    (?: <%=e '$'%> \s* | <%=e '@'%> )
-                    (?: \d+ | \w+ )
-                    |
-                    <%=e '$'%> \s*
-                name: variable.other.readwrite.global.perl
+                    (
+                        (?: <%=e '$'%> \s* | <%=e '@'%> )
+                        (?: \d+ | \w+ )
+                        |
+                        <%=e '$'%> \s*
+                    )
+                name: storage.modifier.perl
+                captures:
+                    0: { name: variable.parameter.perl }
+                    1: { name: variable.other.readwrite.global.perl }
             -
                 match: |
                     (?x)
