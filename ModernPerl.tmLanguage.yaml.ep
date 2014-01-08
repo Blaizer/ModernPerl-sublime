@@ -898,40 +898,38 @@ sub e {
             endCaptures:
                 1: { name: string.quoted.single.perl }
     regex_quantifier_curly:
-        patterns:
-        -
-            match: |
-                (?x)
-                {(?:
-                    \d+,?
-                    |
-                    (?>0*(?=\d)) # skip 0s
-                    (
-                        \d
-                        \g<-1>
-                        \d
-                        |               # can't get any more balanced digits so we're innermost
-                        , (?>0*(?=\d))  # skip 0s after comma
-                    )
-                    \d+
-                )}
-            name: string.quoted.double.perl
-        % for my $n (1..10) {
-        -
-            begin: |
-                (?x)
-                (?={
-                    (?>0*(?=\d))<%= '(\d)' x $n %> , (?>0*(?=\d))\d{<%= $n %>}
-                })
-            end: |
-                (?x)
-                ({
-                \d* , (?>0*(?=\d))
-                <%= join "", map "(?:[^0-\\$_]|\\$_ ", 1..$n
-                %><%= ')' x $n %>
-                \d*
-                }) | {\d*,\d*}
-            endCaptures:
-                1: { name: string.quoted.double.perl }
+        % for my $n (10) {
+        begin: |
+            (?x)
+            (?={
+                (?>0*(?=\d))<%= '(\d??)' x ($n-1) %>(\d) , \d+
+            })
+        end: |
+            (?x)
+            ({
+            \d+ , (?>0*(?=\d))
+            <%= join "\n" . " " x 12, map {
+                my $more_digits = '[&\1&\d]{%d,}';
+                $more_digits = sprintf $more_digits, $n - $_ + 2;
+
+                my $greater_digit .= '[&\1&\d&&[^0-\1]]\d{%d}';
+                $greater_digit = sprintf $greater_digit, $n - $_;
+
+                my $full;
+                if ($_ < $n) {
+                    $full = "(?: $more_digits | $greater_digit | \\1";
+                }
+                else {
+                    $full = '(?: \d{2,} | [\d&&[^0-\1]] )';
+                }
+
+                $full =~ s/\\1/\\$_/g;
+                $full;
+            } 1..$n
+            %>
+            <%= ')' x ($n-1) %>
+            }) | {\d*,\d*}
+        endCaptures:
+            1: { name: string.quoted.double.perl }
         % }
 ...
