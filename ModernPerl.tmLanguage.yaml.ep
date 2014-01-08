@@ -105,7 +105,7 @@ for (
                 |
                 # assignment - but not a mutator, comparison, or variable
                 (?<= = )
-                (?<! [*/'%'x+\-.=!<>&|^@$] = )
+                (?<! [*/%%%x+\-.=!<>&|^@$] = )
             )
         |
             # named operators you'd expect before a /regex/
