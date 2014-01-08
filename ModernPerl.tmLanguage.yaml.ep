@@ -112,6 +112,7 @@ for (
             (?<=\w)
             (?:
                 # never gonna be perfect with the limitations of lookbehinds, but this is close
+                # TODO: recognise CORE:: here?
                 (?<= if | or )                           (?<! [\w@$&*'%'].{2} | ::.{2} )
                 |
                 (?<= and | die | for | not | say | xor ) (?<! [\w@$&*'%'].{3} | ::.{3} )
