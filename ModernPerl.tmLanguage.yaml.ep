@@ -93,7 +93,7 @@ for (
         (?=\s*/) # optimisation to fail faster
         (?:
             # punctuation to expect before a /regex/
-            (?<=\W)
+            (?<=[^[^!-~]\w\s])
             (?:
                 (?<=
                     # binding operators - definitely a regex
@@ -112,18 +112,17 @@ for (
             (?<=\w)
             (?:
                 # never gonna be perfect with the limitations of lookbehinds, but this is close
-                # TODO: recognise CORE:: here?
-                (?<= if | or )                           (?<! [\w@$&*'%'].{2} | ::.{2} )
+                (?<= if | or )                           %%2%
                 |
-                (?<= and | die | for | not | say | xor ) (?<! [\w@$&*'%'].{3} | ::.{3} )
+                (?<= and | die | for | not | say | xor ) %%3%
                 |
-                (?<= exit | warn | when )                (?<! [\w@$&*'%'].{4} | ::.{4} )
+                (?<= exit | warn | when )                %%4%
                 |
-                (?<= print | split | until | while )     (?<! [\w@$&*'%'].{5} | ::.{5} )
+                (?<= print | split | until | while )     %%5%
                 |
-                (?<= return | unless )                   (?<! [\w@$&*'%'].{6} | ::.{6} )
+                (?<= return | unless )                   %%6%
                 |
-                (?<= defined | foreach )                 (?<! [\w@$&*'%'].{7} | ::.{7} )
+                (?<= defined | foreach )                 %%7%
             )
         )
         \s*+ (\/)
@@ -144,6 +143,24 @@ for (
 #
 ) {
     my ($keyword, $quote, $meta, $scope, $include, $single, $modifiers) = @$_;
+
+    my $q = defined $quote ? '\8' : '';
+    if ($keyword =~ /m/) {
+        $q .= '\9';
+
+        # gonna replace %%2%, %%3%, etc., in the m $quote above with some lookbehinds
+        sub regexp_m_lb {
+            my ($n) = @_;
+            my $core = sprintf '(?<=CORE::.{%d})', $n;
+            my $format = '(?<![\w\'@$&*%%].{%d}|::.{%1$d}|->.{%1$d})';
+            my $core_lb = sprintf $format, $n + length "CORE::";
+            my $lb = sprintf $format, $n;
+            return qq{
+                    (?: $core $core_lb | $lb )};
+        }
+        chomp $quote;
+        $quote =~ s{\s*%%(\d+)%\s*$}{regexp_m_lb $1}gme;
+    }
 %>\
 -
     begin: |
@@ -159,12 +176,9 @@ for (
     end: |
         (?x)
         (?:
-            % { my $q = defined $quote ? '\8' : '';
-            % $q .= '\9' if $keyword =~ /m/;
             ((?!\3)\)|(?!\4)>|(?!\5)\]|(?!\6)\})
             |
             ([\7<%=$q%>[&&]])
-            % }
         )
         % if (defined $modifiers) {
         ([<%= $modifiers %>]*) \w*
@@ -587,7 +601,10 @@ for (
     match: |
         (?x)
         # class name
-        \b (\g<2>)?
+        (?:
+            (?=[^[^\w:]\d])(?<!\w)
+            (\g<2>)
+        )?
         -> \s*
         #
         # method name
