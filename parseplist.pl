@@ -165,7 +165,7 @@ sub unparse {
 
 		$item //= '';
 		$item =~ s/(?:^|\G)\ {4}/\t/gm; # convert indentation to tabs
-		$item =~ s/\n/\n$indent/g;
+		$item =~ s/(?<=\n)/$indent/g;
 
 		my $orig_item = $item;
 		$item =~ s/&/&amp;/g;
