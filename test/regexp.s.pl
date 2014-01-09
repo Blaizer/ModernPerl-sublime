@@ -61,31 +61,31 @@ s (
     stuff
   )[
     second stuff
-  ]egimosx
+  ]egimosxqq
 
 s(
   stuff
 )!
   second stuff
-!egimosx
+!egimosxEE
 
 s (
     f
   )
   (
     s
-  )egimosx
+  )egimosxqq
 
 s < f >#
   yup
-#egi
+#egiEE
 
 s<
   # nope
 > # < yup > #
 < # dun think so
   # ok wut
->egimosx
+>egimosxqq
 
 s [
    	first
@@ -95,7 +95,7 @@ s [
 
   [
     second
-  ]egimosx
+  ]egimosxEE
 
 s[
   first
@@ -105,7 +105,7 @@ s[
 
 ^
   second
-^egimosx
+^egimosxqq
 
 s
 exit ok

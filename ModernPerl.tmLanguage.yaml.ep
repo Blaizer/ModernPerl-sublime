@@ -181,7 +181,7 @@ for (
             ([\7<%=$q%>[&&]])
         )
         % if (defined $modifiers) {
-        ([<%= $modifiers %>]*) \w*
+        ([<%= $modifiers %>]*) (\w*)
         % }
     name: <%= $meta %>
     beginCaptures:
@@ -201,6 +201,7 @@ for (
         2: { name: punctuation.definition.string.end.perl }
         % if (defined $modifiers) {
         3: { name: keyword.operator.perl }
+        4: { name: invalid.illegal.perl }
         % }
     patterns:
     % if (defined $single) {
@@ -245,13 +246,14 @@ for (
                     (?<![^\W[<%= $modifiers %>]])
                     ([<%= $modifiers %>]*)
                 )?
-                \w*
+                (\w*)
             )?
         beginCaptures:
             1: { name: keyword.function.perl }
             # 2: { name: punctuation.definition.string.pair.perl }
         endCaptures:
             1: { name: keyword.operator.perl }
+            2: { name: invalid.illegal.perl }
         patterns:
         -
             begin: |-
@@ -265,7 +267,7 @@ for (
                 )
                 (?:
                     (?<=<%= $bclose %>)
-                    (?: ([<%= $modifiers %>]) | \w )
+                    (?: ([<%= $modifiers %>]) | (\w) )
                 )?
                 <%= $bclose %>*
             beginCaptures:
@@ -273,6 +275,7 @@ for (
                 2: { name: comment.line.number-sign.perl }
             endCaptures:
                 1: { name: keyword.operator.perl }
+                2: { name: invalid.illegal.perl }
             patterns:
             -
                 match: |-
@@ -310,7 +313,7 @@ for (
                 )
                 (?:
                     (?<=<%= $bclose %>)
-                    (?: ([<%= $modifiers %>]) | \w )
+                    (?: ([<%= $modifiers %>]) | (\w) )
                 )?
                 <%= $bclose %>*
             beginCaptures:
@@ -321,6 +324,7 @@ for (
                 # 1: { name: punctuation.definition.string.pair.perl }
                 2: { name: punctuation.definition.string.end.perl }
                 3: { name: keyword.operator.perl }
+                4: { name: invalid.illegal.perl }
             patterns:
             - include: '#<%= $second_include %>'
         -
@@ -340,10 +344,11 @@ for (
         begin: |-
             (?x) (?= (?:CORE::)?+ \w+ \s* <%= $open %> )
         end: |-
-            (?x) (<%= $open %>) ([<%= $modifiers %>]*) \w*
+            (?x) (<%= $open %>) ([<%= $modifiers %>]*) (\w*)
         endCaptures:
             1: { name: punctuation.definition.string.end.perl }
             2: { name: keyword.operator.perl }
+            3: { name: invalid.illegal.perl }
         patterns:
         -
             begin: |-
