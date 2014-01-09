@@ -20,10 +20,10 @@ patterns:
 - include: '#pod'
 -
     match: |-
-        [%&*/]=|&&|\*\*|//
+        (?x) [&%*][!\-~=] | && | \*\* | //
     comment: >-
         These would otherwise be highlighted as variables or regex,
-        but they're more likely to be an operator.
+        but they're more likely to be an operator (or two).
 -
     match: |
         (?x)
