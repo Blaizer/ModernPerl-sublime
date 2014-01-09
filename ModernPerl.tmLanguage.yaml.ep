@@ -843,21 +843,15 @@ sub e {
         captures:
             1: { name: punctuation.definition.comment.perl }
     pod:
+        begin: |-
+            ^=\p{Alpha}[\d\D]*
+        end: |-
+            ^=cut(?!\p{Alpha})[\d\D]*
+        name: comment.block.documentation.pod
         patterns:
         -
-            begin: |-
-                ^(?==(?=\p{Alpha})(?!cut(?!\p{Alpha})))
-            end: |-
-                ^=cut(?!\p{Alpha})[\d\D]*
-            name: comment.block.documentation.pod
-            patterns:
-            -
-                match: '\t+'
-                name: invalid.deprecated.tab.pod
-        -
-            match: |-
-                ^=cut(?!\p{Alpha})[\d\D]*
-            name: comment.block.documentation.pod
+            match: '\t+'
+            name: invalid.deprecated.tab.pod
     heredoc_1:
         patterns:
         -
