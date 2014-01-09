@@ -911,11 +911,7 @@ sub e {
             ({
             \d+ , (?>0*(?=\d))
             <%= join "\n" . " " x 12, map {
-                my $more_digits = sprintf '\d{%d,}', $n - $_ + 2;
-
-                my $greater_digit = sprintf '[&\1&\d&&[^0-\1]]\d{%d}', $n - $_;
-
-                my $full = "(?: $more_digits | $greater_digit";
+                my $full = sprintf '(?: \d{%d,} | [&\1&\d&&[^0-\1]]\d{%d}', $n-$_+2, $n-$_;
                 $full .= ' | \1' if $_ < $n;
 
                 $full =~ s/\\1/\\$_/g;
