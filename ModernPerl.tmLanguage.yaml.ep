@@ -16,6 +16,7 @@ fileTypes:
 firstLineMatch: |-
     ^#!.*\bperl\b
 patterns:
+- include: '#regex_quantifier_curly'
 - include: '#line_comment'
 - include: '#pod'
 -
@@ -904,27 +905,41 @@ sub e {
                 1: { name: string.quoted.single.perl }
     regex_quantifier_curly:
         % for my $n (10) {
+        comment: >-
+            For {n,m} to be a quantifier, n must exist, and m must be greater than n if it exists.
+            Just take my word for it that this voodoo does all that
+            and numeric comparison of m > n up to an n that is 10 digits long.
         begin: |
             (?x)
             (?={
                 (?>0*(?=\d))
                 \d*?<%= '(\d??)' x $n %>
-                , \d+
+                ,? \d*+
             })
         end: |
             (?x)
             ({
-            \d+ , (?>0*(?=\d))
-            <%= join "\n" . " " x 12, map {
-                my $full = sprintf '(?: \d{%d,} | [&\1&\d&&[^0-\1]]\d{%d}', $n-$_+2, $n-$_;
-                $full .= ' | \1' if $_ < $n;
+                \d+
+                (?:
+                    # m is empty
+                    ,?
+                    |
+                    # otherwise numeric comparison!
+                    , (?>0*(?=\d))
+                    <%= join "\n" . " " x 12, map {
+                        my $full = sprintf '(?: \d{%d,} | [&\1&\d&&[^0-\1]]\d{%d}', $n-$_+2, $n-$_;
+                        $full .= ' | \1' if $_ < $n;
 
-                $full =~ s/\\1/\\$_/g;
-                $full;
-            } 1..$n
-            %>
-            <%= ')' x $n %>
-            }) | {\d*,\d*}
+                        $full =~ s/\\1/\\$_/g;
+                        $full;
+                    } 1..$n
+                    %>
+                    <%= ')' x $n %>
+                )
+            })
+            |
+            # not a quantifier, but we have to match something to prevent infinite recursion
+            {\d*,?\d*}
         endCaptures:
             1: { name: string.quoted.double.perl }
         % }
