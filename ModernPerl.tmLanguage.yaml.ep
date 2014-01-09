@@ -185,7 +185,7 @@ for (
         % }
     name: <%= $meta %>
     beginCaptures:
-        1: { name: keyword.operator.perl }
+        1: { name: keyword.function.perl }
         # 2: { name: punctuation.definition.string.pair.perl }
         7: { name: punctuation.definition.string.begin.perl }
         % if (defined $quote) {
@@ -200,7 +200,7 @@ for (
         # 1: { name: punctuation.definition.string.pair.perl }
         2: { name: punctuation.definition.string.end.perl }
         % if (defined $modifiers) {
-        3: { name: keyword.operator.modifier }
+        3: { name: keyword.operator.perl }
         % }
     patterns:
     % if (defined $single) {
@@ -248,10 +248,10 @@ for (
                 \w*
             )?
         beginCaptures:
-            1: { name: keyword.operator.perl }
+            1: { name: keyword.function.perl }
             # 2: { name: punctuation.definition.string.pair.perl }
         endCaptures:
-            1: { name: keyword.operator.modifier.perl }
+            1: { name: keyword.operator.perl }
         patterns:
         -
             begin: |-
@@ -272,7 +272,7 @@ for (
                 # 1: { name: punctuation.definition.string.pair.perl }
                 2: { name: comment.line.number-sign.perl }
             endCaptures:
-                1: { name: keyword.operator.modifier.perl }
+                1: { name: keyword.operator.perl }
             patterns:
             -
                 match: |-
@@ -320,7 +320,7 @@ for (
             endCaptures:
                 # 1: { name: punctuation.definition.string.pair.perl }
                 2: { name: punctuation.definition.string.end.perl }
-                3: { name: keyword.operator.modifier.perl }
+                3: { name: keyword.operator.perl }
             patterns:
             - include: '#<%= $second_include %>'
         -
@@ -343,29 +343,31 @@ for (
             (?x) (<%= $open %>) ([<%= $modifiers %>]*) \w*
         endCaptures:
             1: { name: punctuation.definition.string.end.perl }
-            2: { name: keyword.operator.modifier.perl }
+            2: { name: keyword.operator.perl }
         patterns:
         -
             begin: |-
                 (?x) ( (?:CORE::)?+ \w+ ) \s* (<%= $open %>)
             end: |
                 (?x)
-                ((<%= $open %>))
+                (<%= $open %>)
                 (?:
-                    (?! \g<4> <%= $open %> )
+                    (?! \g<3> <%= $open %> )
                     |
-                    (?<=')(\g<4>)
+                    (?<=')(\g<3>)
                     |
                     ( \w+ \s* )
                 )
             beginCaptures:
-                1: { name: keyword.operator.perl }
+                1: { name: keyword.function.perl }
                 2: { name: punctuation.definition.string.begin.perl }
             endCaptures:
-                1: { name: punctuation.definition.string.begin.perl }
-                2: { name: punctuation.definition.string.end.perl }
-                3: { name: string.quoted.single.perl }
-                4: { name: string.quoted.double.perl }
+                1:
+                    name: >-
+                        punctuation.definition.string.begin.perl
+                        punctuation.definition.string.end.perl
+                2: { name: string.quoted.single.perl }
+                3: { name: string.quoted.double.perl }
             patterns:
             - include: '#<%= $first_include %>'
         -
@@ -437,19 +439,19 @@ for (
     name: keyword.control.perl
 -
     match: |-
-        (\b(?:CORE::)?(?:local|my|our|state)(?!\w|::|'[^\W\d]))
-    name: storage.modifier.perl
-    captures:
-        0: { name: variable.parameter.perl }
-        1: { name: variable.other.readwrite.global.perl }
+        \b(?:CORE::)?(?:local|my|our|state)(?!\w|::|'[^\W\d])
+    name: >-
+        storage.modifier.perl
+        variable.parameter.perl
+        variable.other.readwrite.global.perl
 -
     match: |-
         \b(?:CORE::)?(?:m|q|qq|qr|qw|qx|s|tr|y)\b
-    name: keyword.operator.perl
+    name: keyword.function.perl
 -
     match: |-
         \b(?:CORE::)?(?:and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::|'[^\W\d])
-    name: keyword.operator.perl
+    name: keyword.function.perl
 -
     begin: |-
         \b(?:CORE::)?__(?:END|DATA)__(?!\w|::|'[^\W\d])
@@ -545,9 +547,9 @@ for (
 -
     match: |-
         \b(?:CORE::)?(?:AUTOLOAD|BEGIN|CHECK|END|INIT|UNITCHECK)(?!\w|::|'[^\W\d])
-    name: meta.function.perl
-    captures:
-        0: { name: entity.name.function.perl }
+    name: >-
+        meta.function.perl
+        entity.name.function.perl
 -
     match: |
         (?x)
@@ -766,10 +768,10 @@ sub e {
                         |
                         <%=e '$'%> \s*
                     )
-                name: storage.modifier.perl
-                captures:
-                    0: { name: variable.parameter.perl }
-                    1: { name: variable.other.readwrite.global.perl }
+                name: >-
+                    storage.modifier.perl
+                    variable.parameter.perl
+                    variable.other.readwrite.global.perl
             -
                 match: |
                     (?x)
