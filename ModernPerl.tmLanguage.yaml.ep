@@ -64,9 +64,13 @@ patterns:
                     ([^[^!-~]{\w\s])
                     |
                     { \s* \g<-1> \s* }
+                |
+                    # just highlight the sigil for something like ${ +arbitrary }
+                    (?=\{)
                 )
             )
         |
+            # these characters aren't another operator, so always highlight them as sigils
             [@$] \s*
         )
     captures:
