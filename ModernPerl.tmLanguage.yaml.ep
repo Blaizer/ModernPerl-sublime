@@ -16,7 +16,115 @@ fileTypes:
 firstLineMatch: |-
     ^#!.*\bperl\b
 patterns:
-- include: '#regex_quantifier_curly'
+<% {
+    package Scopes; # different package so that Carp works
+    use YAML::XS;
+    our $scopes = YAML::XS::Load(<<'#');
+
+        # I've separated the scopes from the language definition.
+        # The language below uses only the scopes defined here (well.. except for meta.whatever)
+        # I've broken it up enough and the list below is functionally flexible enough that you
+        # should be able to style everything to your needs without having to touch any real code.
+
+        # You can use $ to refer to another entry in the list below.
+        # The name of one of these references can only contain letters, numbers, and underscores.
+        # You can refer to stuff higher up in the list, and you can even refer to stuff recursively.
+        # (just watch out for infinite recursion)
+
+        # You can mark an entry as "private" by prefixing its name with _.
+        # This denotes that it should only be used in the construction of the list.
+        # Also feel free to use # in the text below to comment out lines, just like this line.
+
+        # You can put a list of scopes into one entry. Just use the >- syntax.
+        # Things later in the list will be applied by Sublime first.
+        # So the scopes will be gone through backwards until your theme has a style for that scope.
+
+        # Documentation on standard scopes: http://manual.macromates.com/en/language_grammars
+        # An easy way of seeing what scopes a language uses is to install "ScopeAlways".
+        # Then just type to produce a colour in that language, and see the scope in the status bar.
+        # You can also try wading around in .tmTheme files to see what scopes they have rules for.
+
+        _keyword:         keyword.other
+        keyword_control:  keyword.control
+        keyword_function: $_keyword.function
+        keyword_string:   $keyword_function
+        keyword_filetest: $_keyword.filetest
+        keyword_operator: $_keyword.operator
+        keyword_token:    $_keyword.token
+        keyword_storage: >-
+            $_keyword.storage
+            storage.modifier
+            variable.parameter
+            variable.other.readwrite.global
+
+        sub_name:      entity.name.function
+        sub_prototype: storage.type.method
+
+        comment_line:  comment.line.number-sign
+        comment_block: comment.block
+        variable:      punctuation.definition.var
+        function:      support.function
+        method:        $function.method
+        number:        punctuation.definition.number
+
+        string_variable: $keyword_storage
+        string_escape:   constant.character.escape
+
+        string_single:   string.quoted.single
+        string_double:   string.quoted.double
+        string_backtick: string.interpolated
+        string_unquoted: string.unquoted
+        string_glob:     $string_double
+        string_version:  string.other.version
+
+        _autoquoted:       constant.language
+        string_autoquoted: $_autoquoted.string
+        label:             $_autoquoted.label
+        filehandle:        $_autoquoted.filehandle
+
+        string_regexp:          string.regexp
+        string_regexp_modifier: keyword.operator
+        string_transliteration: string.other.transliteration
+
+        string_quote_begin: punctuation.definition.string.begin
+        string_quote_end:   punctuation.definition.string.end
+        string_pair_begin:
+        string_pair_end:
+
+        # these are here just so that you can disable them
+        _error:           invalid.illegal
+        _bad:             invalid.deprecated
+        invalid_modifier: $_error
+        invalid_number:   $_error.number
+        invalid_pod_tab:  $_bad
+#
+
+    sub decode_scopes {
+        return '' if !defined $_[0];
+        $_[0] =~ s{\$(\w+)}{
+            exists $scopes->{$1} or die "Scope '$1' doesn't exist while decoding scopes";
+            decode_scopes($scopes->{$1});
+        }e;
+        return $_[0];
+    }
+    decode_scopes($_) for values % $scopes;
+
+    use Carp;
+    sub scope {
+        my $name = shift;
+        my $scope = join " ", map {
+            s/(^\w+)(.*)/$1/s;
+            exists $scopes->{$_} or Carp::croak "Scope '$_' doesn't exist";
+            defined $scopes->{$_} ? map("$_$2.perl", split /\s+/, $scopes->{$_}) : "";
+        } map $_, @_;
+        return "$name$scope";
+    }
+}
+
+    # using goto so that Carp blames the calling code
+    sub scope       { unshift @_, "";       goto &Scopes::scope }
+    sub name        { unshift @_, "name: "; goto &Scopes::scope }
+%>
 - include: '#line_comment'
 - include: '#pod'
 -
@@ -75,13 +183,13 @@ patterns:
             [@$] \s*
         )
     captures:
-        1: { name: support.function.ampersand.perl }
-        2: { name: punctuation.definition.var.perl }
+        1: { <%= name 'function.sigil' %> }
+        2: { <%= name 'variable' %> }
 -
     match: |-
         (-?\b[^\W\d]\w*+)\s*+=>
     captures:
-        1: { name: constant.language.string.perl }
+        1: { <%= name 'string_autoquoted' %> }
     comment: >-
         Turns out this operator needs to be really high up.
         It always autoquotes word characters. It even autoquotes q=>=,
@@ -89,11 +197,11 @@ patterns:
         There is a way, though! CORE::q=>=. There's always a way!
 <%
 for (
-    [ 'qw?', "(')", 'meta.string.q.perl',  'string.quoted.single.perl', 'single' ],
-    [ 'qq',  '(")', 'meta.string.qq.perl', 'string.quoted.double.perl', 'double' ],
-    [ 'qx',  '(`)', 'meta.string.qx.perl', 'string.interpolated.perl',  'double', 'single' ],
-    [ 'qr',  undef, 'meta.regexp.qr.perl', 'string.regexp.perl',        'double', 'single',   'adilmopsux' ],
-    [ 'm',   <<'#', 'meta.regexp.m.perl',  'string.regexp.perl',        'double', 'single', 'acdgilmopsux' ],
+    [ 'qw?', "(')", 'meta.string.q.perl',  'string_single',   'single' ],
+    [ 'qq',  '(")', 'meta.string.qq.perl', 'string_double',   'double' ],
+    [ 'qx',  '(`)', 'meta.string.qx.perl', 'string_backtick', 'double', 'single' ],
+    [ 'qr',  undef, 'meta.regexp.qr.perl', 'string_regexp',   'double', 'single',   'adilmopsux' ],
+    [ 'm',   <<'#', 'meta.regexp.m.perl',  'string_regexp',   'double', 'single', 'acdgilmopsux' ],
 # Guessing whether a / is a division or the start of a regex is pretty tricky!
         (?=\s*/) # optimisation to fail faster
         (?:
@@ -190,23 +298,23 @@ for (
         % }
     name: <%= $meta %>
     beginCaptures:
-        1: { name: keyword.function.perl }
-        # 2: { name: punctuation.definition.string.pair.perl }
-        7: { name: punctuation.definition.string.begin.perl }
+        1: { <%= name "keyword_string" %> }
+        2: { <%= name "string_pair_begin" %> }
+        7: { <%= name "string_quote_begin" %> }
         % if (defined $quote) {
-        8: { name: punctuation.definition.string.begin.perl }
+        8: { <%= name "string_quote_begin" %> }
         % } if ($keyword =~ /m/) {
-        9: { name: punctuation.definition.string.begin.perl }
+        9: { <%= name "string_quote_begin" %> }
         % }
     % if (defined $scope) {
-    contentName: <%= $scope %>
+    contentName: <%= scope $scope %>
     % }
     endCaptures:
-        # 1: { name: punctuation.definition.string.pair.perl }
-        2: { name: punctuation.definition.string.end.perl }
+        1: { <%= name "string_pair_end" %> }
+        2: { <%= name "string_quote_end" %> }
         % if (defined $modifiers) {
-        3: { name: keyword.operator.perl }
-        4: { name: invalid.illegal.perl }
+        3: { <%= name "string_regexp_modifier" %> }
+        4: { <%= name "invalid_modifier" %> }
         % }
     patterns:
     % if (defined $single) {
@@ -254,11 +362,11 @@ for (
                 (\w*)
             )?
         beginCaptures:
-            1: { name: keyword.function.perl }
-            # 2: { name: punctuation.definition.string.pair.perl }
+            1: { <%= name "keyword_string" %> }
+            2: { <%= name "string_pair_begin" %> }
         endCaptures:
-            1: { name: keyword.operator.perl }
-            2: { name: invalid.illegal.perl }
+            1: { <%= name "string_regexp_modifier" %> }
+            2: { <%= name "invalid_modifier" %> }
         patterns:
         -
             begin: |-
@@ -276,17 +384,17 @@ for (
                 )?
                 <%= $bclose %>*
             beginCaptures:
-                # 1: { name: punctuation.definition.string.pair.perl }
-                2: { name: comment.line.number-sign.perl }
+                1: { <%= name "string_pair_end" %> }
+                2: { <%= name "comment_line" %> }
             endCaptures:
-                1: { name: keyword.operator.perl }
-                2: { name: invalid.illegal.perl }
+                1: { <%= name "string_regexp_modifier" %> }
+                2: { <%= name "invalid_modifier" %> }
             patterns:
             -
                 match: |-
                    (?x) ^ \s* (\#.*)? \n
                 captures:
-                    1: { name: comment.line.number-sign.perl }
+                    1: { <%= name "comment_line" %> }
             -
                 begin: |
                     (?x)
@@ -297,11 +405,11 @@ for (
                 end: |-
                     ((?!\2)\)|(?!\3)>|(?!\4)\]|(?!\5)\})|([\6[&&]])
                 beginCaptures:
-                    # 1: { name: punctuation.definition.string.pair.perl }
-                    6: { name: punctuation.definition.string.begin.perl }
+                    1: { <%= name "string_pair_begin" %> }
+                    6: { <%= name "string_quote_begin" %> }
                 endCaptures:
-                    # 1: { name: punctuation.definition.string.pair.perl }
-                    2: { name: punctuation.definition.string.end.perl }
+                    1: { <%= name "string_pair_end" %> }
+                    2: { <%= name "string_quote_end" %> }
                 patterns:
                 - include: '#<%= $second_include %>'
         -
@@ -322,21 +430,20 @@ for (
                 )?
                 <%= $bclose %>*
             beginCaptures:
-                # 1: { name: punctuation.definition.string.pair.perl }
-                # 2: { name: punctuation.definition.string.pair.perl }
-                7: { name: punctuation.definition.string.begin.perl }
+                1: { <%= name "string_pair_end" %> }
+                2: { <%= name "string_pair_begin" %> }
+                7: { <%= name "string_quote_begin" %> }
             endCaptures:
-                # 1: { name: punctuation.definition.string.pair.perl }
-                2: { name: punctuation.definition.string.end.perl }
-                3: { name: keyword.operator.perl }
-                4: { name: invalid.illegal.perl }
+                1: { <%= name "string_pair_end" %> }
+                2: { <%= name "string_quote_end" %> }
+                3: { <%= name "string_regexp_modifier" %> }
+                4: { <%= name "invalid_modifier" %> }
             patterns:
             - include: '#<%= $second_include %>'
         -
             match: |-
-                (<%= $bclose %>)
-            # captures:
-                # 1: { name: punctuation.definition.string.pair.perl }
+                <%= $bclose %>
+            name: <%= scope "string_pair_end" %>
         -
             begin: |-
                 (?<=<%= $bopen %>)
@@ -351,9 +458,9 @@ for (
         end: |-
             (?x) (<%= $open %>) ([<%= $modifiers %>]*) (\w*)
         endCaptures:
-            1: { name: punctuation.definition.string.end.perl }
-            2: { name: keyword.operator.perl }
-            3: { name: invalid.illegal.perl }
+            1: { <%= name "string_quote_end" %> }
+            2: { <%= name "string_regexp_modifier" %> }
+            3: { <%= name "invalid_modifier" %> }
         patterns:
         -
             begin: |-
@@ -369,15 +476,12 @@ for (
                     ( \w+ \s* )
                 )
             beginCaptures:
-                1: { name: keyword.function.perl }
-                2: { name: punctuation.definition.string.begin.perl }
+                1: { <%= name "keyword_string" %> }
+                2: { <%= name "string_quote_begin" %> }
             endCaptures:
-                1:
-                    name: >-
-                        punctuation.definition.string.begin.perl
-                        punctuation.definition.string.end.perl
-                2: { name: string.quoted.single.perl }
-                3: { name: string.quoted.double.perl }
+                1: { <%= name "string_quote_begin", "string_quote_end" %> }
+                2: { <%= name "string_single" %> }
+                3: { <%= name "string_double" %> }
             patterns:
             - include: '#<%= $first_include %>'
         -
@@ -406,7 +510,7 @@ for (
         (?! [>=])
     name: meta.string.glob
     captures:
-        1: { name: string.quoted.other.glob.perl }
+        1: { <%= name "string_glob" %> }
 -
     match: |
         (?x)
@@ -416,11 +520,19 @@ for (
             \g<-1> \s*
         )}
     captures:
-        1: { name: constant.language.string.perl }
+        1: { <%= name "string_autoquoted" %> }
+-
+    begin: |-
+        \b(?:CORE::)?__(?:END|DATA)__(?!\w|::|'[^\W\d])[\d\D]*
+    end: |-
+        (?!) # the end has no end
+    name: <%= scope "comment_block" %>
+    patterns:
+    - include: '#pod'
 -
     match: |-
-        \b(?:CORE::)?__(?:FILE|LINE|PACKAGE|SUB)__(?!\w|::|'[^\W\d])
-    name: keyword.function.compiler.perl
+        \b(?:CORE::)?__(?:END|DATA|FILE|LINE|PACKAGE|SUB)__(?!\w|::|'[^\W\d])
+    name: <%= scope "keyword_token" %>
 -
     match: |
         (?x)
@@ -437,39 +549,28 @@ for (
         (?!\w|::|'[^\W\d])
     name: meta.control.labelled.perl
     captures:
-        1: { name: keyword.control.perl }
-        2: { name: constant.language.label.perl }
+        1: { <%= name "keyword_control" %> }
+        2: { <%= name "label" %> }
 -
     match: |-
         \b(?:CORE::)?(?:break|continue|default|dump|else|elsif|for|foreach|given|goto|if|last|next|redo|return|unless|until|when|while)(?!\w|::|'[^\W\d])
-    name: keyword.control.perl
+    name: <%= scope "keyword_control" %>
 -
     match: |-
         \b(?:CORE::)?(?:do|eval)(?=\s*{)
-    name: keyword.control.perl
+    name: <%= scope "keyword_control" %>
 -
     match: |-
         \b(?:CORE::)?(?:local|my|our|state)(?!\w|::|'[^\W\d])
-    name: >-
-        storage.modifier.perl
-        variable.parameter.perl
-        variable.other.readwrite.global.perl
+    name: <%= scope "keyword_storage" %>
 -
     match: |-
         \b(?:CORE::)?(?:m|q|qq|qr|qw|qx|s|tr|y)\b
-    name: keyword.function.perl
+    name: <%= scope "keyword_string" %>
 -
     match: |-
         \b(?:CORE::)?(?:and|cmp|or|xor|not|lt|gt|le|ge|eq|ne|x)(?!\w|::|'[^\W\d])
-    name: keyword.function.perl
--
-    begin: |-
-        \b(?:CORE::)?__(?:END|DATA)__(?!\w|::|'[^\W\d])
-    end: |-
-        (?!) # the end has no end
-    name: comment.block.other.perl
-    patterns:
-    - include: '#pod'
+    name: <%= scope "keyword_operator" %>
 -
     begin: |
         (?x)
@@ -491,15 +592,15 @@ for (
         ^\.\s*$
     name: meta.format.perl
     beginCaptures:
-        1: { name: keyword.function.perl }
-        2: { name: constant.language.filehandle.picture.perl }
+        1: { <%= name "keyword_function" %> }
+        2: { <%= name "filehandle" %> }
     patterns:
     -
         begin: |-
             =\s*
         end: |-
             (?=^\.\s*$)
-        contentName: string.unquoted.format.perl
+        contentName: <%= scope "string_unquoted" %>
         patterns:
         - include: '#line_comment'
         - include: '#variable'
@@ -517,8 +618,8 @@ for (
         )
     name: meta.package.perl
     captures:
-        1: { name: keyword.control.perl }
-        2: { name: constant.language.package.perl }
+        1: { <%= name "keyword_control" %> }
+        2: { <%= name "string_autoquoted" %> }
 -
     begin: |
         (?x)
@@ -544,35 +645,37 @@ for (
         (?<= [)] )
     name: meta.function.perl
     beginCaptures:
-        1: { name: keyword.control.perl }
-        2: { name: support.function.perl }
-        3: { name: entity.name.function.perl }
+        1: { <%= name "keyword_control" %> }
+        2: { <%= name "function" %> }
+        3: { <%= name "sub_name" %> }
     patterns:
     -
         begin: '\('
         end: '\)'
-        contentName: storage.type.method.perl
+        contentName: <%= scope "sub_prototype" %>
         patterns:
         - include: '#single'
 -
     match: |-
         \b(?:CORE::)?(?:AUTOLOAD|BEGIN|CHECK|END|INIT|UNITCHECK)(?!\w|::|'[^\W\d])
-    name: >-
-        meta.function.perl
-        entity.name.function.perl
+    name: meta.function.perl <%= scope "sub_name" %>
 -
     match: |
         (?x)
             # these functions can take two filehandles as arguments
-            \b ( (?:CORE::)? (?:accept|pipe|socketpair) ) \g<5>
-            (\g<6>) \s*,\s* (\g<6>)
+            \b ( (?:CORE::)? (?:accept|pipe|socketpair) ) \g<6>
+            (\g<7>) \s*,\s* (\g<7>)
         |
-            # these functions take a filehandle as the first argument
-            (
-                \b (?:CORE::)? (?:accept|bind|binmode|chdir|close|closedir|connect|eof|fcntl|fileno|flock|formline|getc|getpeername|getsockname|getsockopt|ioctl|listen|lstat|open|opendir|pipe|print|printf|read|readdir|readline|recv|rewinddir|say|seek|seekdir|select|send|setsockopt|shutdown|socket|socketpair|stat|sysopen|sysread|sysseek|syswrite|tell|telldir|truncate|write)
+            (?:
+                (
+                   # these functions take a filehandle as the first argument
+                    \b (?:CORE::)? (?:accept|bind|binmode|chdir|close|closedir|connect|eof|fcntl|fileno|flock|formline|getc|getpeername|getsockname|getsockopt|ioctl|listen|lstat|open|opendir|pipe|print|printf|read|readdir|readline|recv|rewinddir|say|seek|seekdir|select|send|setsockopt|shutdown|socket|socketpair|stat|sysopen|sysread|sysseek|syswrite|tell|telldir|truncate|write)
+                )
             |
-                # filetest operators
-                -[ABCMORSTWXbcdefgkloprstuwxz] (?<! \w.. )
+                (
+                    # filetest operators also take a filehandle as a first argument
+                    -[ABCMORSTWXbcdefgkloprstuwxz] (?<!\w..)
+                )
             )
             (
                 (?!\w|::|'[^\W\d])
@@ -586,11 +689,16 @@ for (
             )
     name: meta.function.filehandle.perl
     captures:
-        1: { name: keyword.function.perl }
-        2: { name: constant.language.filehandle.perl }
-        3: { name: constant.language.filehandle.perl }
-        4: { name: keyword.function.perl }
-        6: { name: constant.language.filehandle.perl }
+        1: { <%= name "keyword_function" %> }
+        2: { <%= name "filehandle" %> }
+        3: { <%= name "filehandle" %> }
+        4: { <%= name "keyword_function" %> }
+        5: { <%= name "keyword_filetest" %> }
+        7: { <%= name "filehandle" %> }
+-
+    match: |-
+        -[ABCMORSTWXbcdefgkloprstuwxz](?<!\w..)
+    name: <%= scope "keyword_filetest" %>
 -
     match: |
         (?x)
@@ -599,14 +707,13 @@ for (
                 abs|accept|alarm|and|atan2|bind|binmode|bless|break|caller|chdir|chmod|chomp|chop|chown|chr|chroot|close|closedir|cmp|connect|continue|cos|crypt|dbmclose|dbmopen|default|defined|delete|die|do|dump|each|else|elsif|endgrent|endhostent|endnetent|endprotoent|endpwent|endservent|eof|eq|eval|evalbytes|exec|exists|exit|exp|fc|fcntl|fileno|flock|for|foreach|fork|format|formline|ge|getc|getgrent|getgrgid|getgrnam|gethostbyaddr|gethostbyname|gethostent|getlogin|getnetbyaddr|getnetbyname|getnetent|getpeername|getpgrp|getppid|getpriority|getprotobyname|getprotobynumber|getprotoent|getpwent|getpwnam|getpwuid|getservbyname|getservbyport|getservent|getsockname|getsockopt|given|glob|gmtime|goto|grep|gt|hex|if|index|int|ioctl|join|keys|kill|last|lc|lcfirst|le|length|link|listen|local|localtime|lock|log|lstat|lt|m|map|mkdir|msgctl|msgget|msgrcv|msgsnd|my|ne|next|no|not|oct|open|opendir|or|ord|our|pack|package|pipe|pop|pos|print|printf|prototype|push|q|qq|qr|quotemeta|qw|qx|rand|read|readdir|readline|readlink|readpipe|recv|redo|ref|rename|require|reset|return|reverse|rewinddir|rindex|rmdir|s|say|scalar|seek|seekdir|select|semctl|semget|semop|send|setgrent|sethostent|setnetent|setpgrp|setpriority|setprotoent|setpwent|setservent|setsockopt|shift|shmctl|shmget|shmread|shmwrite|shutdown|sin|sleep|socket|socketpair|sort|splice|split|sprintf|sqrt|srand|stat|state|study|sub|substr|symlink|syscall|sysopen|sysread|sysseek|system|syswrite|tell|telldir|tie|tied|time|times|tr|truncate|uc|ucfirst|umask|undef|unless|unlink|unpack|unshift|untie|until|use|utime|values|vec|wait|waitpid|wantarray|warn|when|while|write|x|xor|y
             )
             |
-            -[ABCMORSTWXbcdefgkloprstuwxz] (?<! \w.. )
         )
         (?!\w|::|'[^\W\d])
-    name: keyword.function.perl
+    name: <%= scope "keyword_function" %>
 -
     match: |-
         \b(?:ARGV|ARGVOUT|STDERR|STDIN|STDOUT|DATA)(?!\w|::|'[^\W\d])
-    name: constant.language.filehandle.perl
+    name: <%= scope "filehandle" %>
     comment: >-
         These aren't keywords, so CORE:: isn't applicable.
 -
@@ -623,23 +730,23 @@ for (
         ((?!')(?:(?:::|'?[^\W\d])\w*+)++)
     name: meta.operator.arrow.perl
     captures:
-        1: { name: constant.language.package.perl }
-        2: { name: support.function.method.perl }
+        1: { <%= name "string_autoquoted" %> }
+        2: { <%= name "method" %> }
 -
     match: |
         (?xi)
         \b(?:0b[01_]*)(?!\w)
-    name: punctuation.definition.number.binary.perl
--
-    match: |
-        (?xi)
-        \b(?:0x[\h_]*)(?!\w)
-    name: punctuation.definition.number.hex.perl
+    name: <%= scope "number.binary" %>
 -
     match: |
         (?xi)
         \b(?:0[0-7_]+)(?!\w)
-    name: punctuation.definition.number.octal.perl
+    name: <%= scope "number.octal" %>
+-
+    match: |
+        (?xi)
+        \b(?:0x[\h_]*)(?!\w)
+    name: <%= scope "number.hex" %>
 -
     match: |
         (?x)
@@ -649,7 +756,7 @@ for (
             (?!0[\d_]) \g<1> \g<2>{2,} # no v with 3 or more digit groups
         )
         (?!\w)
-    name: string.other.version.perl
+    name: <%= scope "string_version" %>
 -
     match: |
         (?xi)
@@ -665,19 +772,19 @@ for (
             (?: e [+-]? [\d_]* )?  # possible exponent
         )
         (?!\w)
-    name: punctuation.definition.number.float.perl
+    name: <%= scope "number.float" %>
 -
     match: |-
         (?:\b\d|\B\.\d)\w*
-    name: invalid.illegal.number.perl
+    name: <%= scope "invalid_number" %>
 -
     match: |-
         \b[^\W\d\p{Lower}][^\W\p{Lower}]*+:(?!:)
-    name: constant.language.label.perl
+    name: <%= scope "label" %>
 -
     match: |-
         (?=[^[^\w:]\d])(?<!\w)(?:(?:::|'?[^\W\d])\w*)+
-    name: support.function.bareword.perl
+    name: <%= scope "function" %>
 
 ################################################################################
 
@@ -760,7 +867,7 @@ sub e {
                 match: |-
                     (\\)[<%= $open.$bclose %>\\]
                 captures:
-                    1: { name: constant.character.escape.perl }
+                    1: { <%= name "string_escape" %> }
             <%= recursive_brackets "single" =%>
         % }
     double:
@@ -778,10 +885,7 @@ sub e {
                         |
                         <%=e '$'%> \s*
                     )
-                name: >-
-                    storage.modifier.perl
-                    variable.parameter.perl
-                    variable.other.readwrite.global.perl
+                name: <%= scope "string_variable" %>
             -
                 match: |
                     (?x)
@@ -801,8 +905,8 @@ sub e {
                     |
                     (\\)[\d\D]
                 captures:
-                    1: { name: constant.character.escape.perl }
-                    2: { name: constant.character.escape.perl }
+                    1: { <%= name "string_escape" %> }
+                    2: { <%= name "string_escape" %> }
             <%= recursive_brackets "double" =%>
         % }
     double_or_single:
@@ -812,7 +916,7 @@ sub e {
                 (?<=')
             end: |-
                 (?=')
-            contentName: string.quoted.single.perl
+            contentName: <%= scope "string_single" %>
             patterns:
             - include: '#single'
         -
@@ -820,7 +924,7 @@ sub e {
                 (?<=(\()|(<)|(\[)|({)|([^[^!-~]\w\s]))
             end: |-
                 (?=(?!\1)\)|(?!\2)>|(?!\3)\]|(?!\4)\}|[\5[&&]])
-            contentName: string.quoted.double.perl
+            contentName: <%= scope "string_double" %>
             patterns:
             - include: '#double'
     double_or_single_regexp:
@@ -830,7 +934,7 @@ sub e {
                 (?<=')
             end: |-
                 (?=')
-            contentName: string.regexp.perl
+            contentName: <%= scope "string_regexp" %>
             patterns:
             - include: '#single'
         -
@@ -838,31 +942,29 @@ sub e {
                 (?<=(\()|(<)|(\[)|({)|([^[^!-~]\w\s]))
             end: |-
                 (?=(?!\1)\)|(?!\2)>|(?!\3)\]|(?!\4)\}|[\5[&&]])
-            contentName: string.regexp.perl
+            contentName: <%= scope "string_regexp" %>
             patterns:
             - include: '#double'
     line_comment:
         match: |-
-            (#)[\d\D]*
-        name: comment.line.number-sign.perl
-        captures:
-            1: { name: punctuation.definition.comment.perl }
+            #[\d\D]*
+        name: <%= scope "comment_line" %>
     pod:
         begin: |-
             ^=\p{Alpha}[\d\D]*
         end: |-
             ^=cut(?!\p{Alpha})[\d\D]*
-        name: comment.block.documentation.pod
+        name: meta.pod <%= scope "comment_block" %>
         patterns:
         -
             match: '\t+'
-            name: invalid.deprecated.tab.pod
+            name: <%= scope "invalid_pod_tab" %>
     heredoc_1:
         patterns:
         -
             begin: |
                 (?x)
-                (<<)
+                <<
                 (?:
                     (\w+)
                     |
@@ -871,38 +973,36 @@ sub e {
                     \s* ` ([^`]*) `
                 ) .* \n?
             end: |-
-                ^(\2\3)(\4)$
+                ^(\1\2)(\3)$
             name: meta.heredoc.perl
             beginCaptures:
-                1: { name: punctuation.definition.heredoc.perl }
-                2: { name: string.quoted.double.perl }
-                3: { name: string.quoted.double.perl }
-                4: { name: string.interpolated.perl }
-            contentName: string.unquoted.perl
+                1: { <%= name "string_double" %> }
+                2: { <%= name "string_double" %> }
+                3: { <%= name "string_backtick" %> }
+            contentName: <%= scope "string_unquoted" %>
             endCaptures:
-                1: { name: string.quoted.double.perl }
-                2: { name: string.interpolated.perl }
+                1: { <%= name "string_double" %> }
+                2: { <%= name "string_backtick" %> }
             patterns:
             - include: '#double'
         -
             begin: |
                 (?x)
-                (<<)
+                <<
                 (?:
                     \\ (\w+)
                     |
                     \s* ' ([^']*) '
                 ) .* \n?
             end: |-
-                ^(\2\3)$
+                ^(\1\2)$
             name: meta.heredoc.single.perl
             beginCaptures:
-                1: { name: punctuation.definition.heredoc.perl }
-                2: { name: string.quoted.single.perl }
-                3: { name: string.quoted.single.perl }
-            contentName: string.unquoted.perl
+                1: { <%= name "string_single" %> }
+                2: { <%= name "string_single" %> }
+            contentName: <%= scope "string_unquoted" %>
             endCaptures:
-                1: { name: string.quoted.single.perl }
+                1: { <%= name "string_single" %> }
     regex_quantifier_curly:
         % for my $n (10) {
         comment: >-
@@ -941,6 +1041,6 @@ sub e {
             # not a quantifier, but we have to match something to prevent infinite recursion
             {\d*,?\d*}
         endCaptures:
-            1: { name: string.quoted.double.perl }
+            1: { <%= name "string_regexp" %> }
         % }
 ...

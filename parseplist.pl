@@ -26,7 +26,7 @@ file first before running this script.
 
 =over
 
-=item YAML
+=item YAML::XS
 
 =item Mojolicious (if using .ep C<INFILE>)
 
@@ -40,7 +40,7 @@ use 5.01;
 use strict;
 use warnings;
 use Data::Dumper;
-use YAML::Any qw/DumpFile Load/;
+use YAML::XS qw/DumpFile Load/;
 use Scalar::Util qw/looks_like_number/;
 use autodie;
 sub parse;
