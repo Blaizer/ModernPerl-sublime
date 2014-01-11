@@ -18,8 +18,8 @@ firstLineMatch: |-
 patterns:
 <% {
     package Scopes; # different package so that Carp works
-    use YAML::XS;
-    our $scopes = YAML::XS::Load(<<'#');
+    use YAML::Any qw(Load);
+    our $scopes = Load(<<'#');
 
         # I've separated the scopes from the language definition.
         # The language below uses only the scopes defined here (well.. except for meta.whatever)
@@ -115,16 +115,31 @@ patterns:
         my $scope = join " ", map {
             s/(^\w+)(.*)/$1/s;
             exists $scopes->{$_} or Carp::croak "Scope '$_' doesn't exist";
-            defined $scopes->{$_} ? map("$_$2.perl", split /\s+/, $scopes->{$_}) : "";
+            defined $scopes->{$_} ? map("$_$2.perl", split /\s+/, $scopes->{$_}) : "''";
         } map $_, @_;
         return "$name$scope";
     }
 }
 
     # using goto so that Carp blames the calling code
-    sub scope       { unshift @_, "";       goto &Scopes::scope }
-    sub name        { unshift @_, "name: "; goto &Scopes::scope }
-%>
+    sub scope {
+        unshift @_, "";
+        goto &Scopes::scope
+    }
+    # using a variable because $_M doesn't work otherwise
+    our $scope = sub {
+        # Needed to use rindex because I don't know of a fast regex solution to this...
+        # This just finds the level of indentation of the last line of YAML output so far
+        pos($_M) = rindex $_M, "\n";
+        $_M =~ /(\G\s*)/; # anchored regex is fast
+        unshift @_, "$1    name: ";
+        goto &Scopes::scope
+    };
+
+    our ($open, $close, $bopen, $bclose);
+    our $i = 0;
+    sub quote_characters;
+=%>
 - include: '#line_comment'
 - include: '#pod'
 -
@@ -183,13 +198,13 @@ patterns:
             [@$] \s*
         )
     captures:
-        1: { <%= name 'function.sigil' %> }
-        2: { <%= name 'variable' %> }
+        1:<%= $scope->('function.sigil') %>
+        2:<%= $scope->('variable') %>
 -
     match: |-
         (-?\b[^\W\d]\w*+)\s*+=>
     captures:
-        1: { <%= name 'string_autoquoted' %> }
+        1:<%= $scope->('string_autoquoted') %>
     comment: >-
         Turns out this operator needs to be really high up.
         It always autoquotes word characters. It even autoquotes q=>=,
@@ -255,7 +270,7 @@ for (
         )
 #
 ) {
-    my ($keyword, $quote, $meta, $scope, $include, $single, $modifiers) = @$_;
+    my ($keyword, $quote, $meta, $scope_key, $include, $single, $modifiers) = @$_;
 
     my $q = defined $quote ? '\8' : '';
     if ($keyword =~ /m/) {
@@ -298,23 +313,23 @@ for (
         % }
     name: <%= $meta %>
     beginCaptures:
-        1: { <%= name "keyword_string" %> }
-        2: { <%= name "string_pair_begin" %> }
-        7: { <%= name "string_quote_begin" %> }
+        1:<%= $scope->('keyword_string') %>
+        2:<%= $scope->('string_pair_begin') %>
+        7:<%= $scope->('string_quote_begin') %>
         % if (defined $quote) {
-        8: { <%= name "string_quote_begin" %> }
+        8:<%= $scope->('string_quote_begin') %>
         % } if ($keyword =~ /m/) {
-        9: { <%= name "string_quote_begin" %> }
+        9:<%= $scope->('string_quote_begin') %>
         % }
-    % if (defined $scope) {
-    contentName: <%= scope $scope %>
+    % if (defined $scope_key) {
+    contentName: <%= scope $scope_key %>
     % }
     endCaptures:
-        1: { <%= name "string_pair_end" %> }
-        2: { <%= name "string_quote_end" %> }
+        1:<%= $scope->('string_pair_end') %>
+        2:<%= $scope->('string_quote_end') %>
         % if (defined $modifiers) {
-        3: { <%= name "string_regexp_modifier" %> }
-        4: { <%= name "invalid_modifier" %> }
+        3:<%= $scope->('string_regexp_modifier') %>
+        4:<%= $scope->('invalid_modifier') %>
         % }
     patterns:
     % if (defined $single) {
@@ -328,9 +343,6 @@ for (
     % }
     - include: '#<%= $include %>'
 % }
-% our ($open, $close, $bopen, $bclose);
-% our $i = 0;
-% sub quote_characters;
 <%
 for (
     [ 's',        'meta.regexp.s.perl', 'double_or_single_regexp', 'double_or_single', 'acdegilmoprsux' ],
@@ -362,11 +374,11 @@ for (
                 (\w*)
             )?
         beginCaptures:
-            1: { <%= name "keyword_string" %> }
-            2: { <%= name "string_pair_begin" %> }
+            1:<%= $scope->('keyword_string') %>
+            2:<%= $scope->('string_pair_begin') %>
         endCaptures:
-            1: { <%= name "string_regexp_modifier" %> }
-            2: { <%= name "invalid_modifier" %> }
+            1:<%= $scope->('string_regexp_modifier') %>
+            2:<%= $scope->('invalid_modifier') %>
         patterns:
         -
             begin: |-
@@ -384,17 +396,17 @@ for (
                 )?
                 <%= $bclose %>*
             beginCaptures:
-                1: { <%= name "string_pair_end" %> }
-                2: { <%= name "comment_line" %> }
+                1:<%= $scope->('string_pair_end') %>
+                2:<%= $scope->('comment_line') %>
             endCaptures:
-                1: { <%= name "string_regexp_modifier" %> }
-                2: { <%= name "invalid_modifier" %> }
+                1:<%= $scope->('string_regexp_modifier') %>
+                2:<%= $scope->('invalid_modifier') %>
             patterns:
             -
                 match: |-
                    (?x) ^ \s* (\#.*)? \n
                 captures:
-                    1: { <%= name "comment_line" %> }
+                    1:<%= $scope->('comment_line') %>
             -
                 begin: |
                     (?x)
@@ -405,11 +417,11 @@ for (
                 end: |-
                     ((?!\2)\)|(?!\3)>|(?!\4)\]|(?!\5)\})|([\6[&&]])
                 beginCaptures:
-                    1: { <%= name "string_pair_begin" %> }
-                    6: { <%= name "string_quote_begin" %> }
+                    1:<%= $scope->('string_pair_begin') %>
+                    6:<%= $scope->('string_quote_begin') %>
                 endCaptures:
-                    1: { <%= name "string_pair_end" %> }
-                    2: { <%= name "string_quote_end" %> }
+                    1:<%= $scope->('string_pair_end') %>
+                    2:<%= $scope->('string_quote_end') %>
                 patterns:
                 - include: '#<%= $second_include %>'
         -
@@ -430,14 +442,14 @@ for (
                 )?
                 <%= $bclose %>*
             beginCaptures:
-                1: { <%= name "string_pair_end" %> }
-                2: { <%= name "string_pair_begin" %> }
-                7: { <%= name "string_quote_begin" %> }
+                1:<%= $scope->('string_pair_end') %>
+                2:<%= $scope->('string_pair_begin') %>
+                7:<%= $scope->('string_quote_begin') %>
             endCaptures:
-                1: { <%= name "string_pair_end" %> }
-                2: { <%= name "string_quote_end" %> }
-                3: { <%= name "string_regexp_modifier" %> }
-                4: { <%= name "invalid_modifier" %> }
+                1:<%= $scope->('string_pair_end') %>
+                2:<%= $scope->('string_quote_end') %>
+                3:<%= $scope->('string_regexp_modifier') %>
+                4:<%= $scope->('invalid_modifier') %>
             patterns:
             - include: '#<%= $second_include %>'
         -
@@ -458,9 +470,9 @@ for (
         end: |-
             (?x) (<%= $open %>) ([<%= $modifiers %>]*) (\w*)
         endCaptures:
-            1: { <%= name "string_quote_end" %> }
-            2: { <%= name "string_regexp_modifier" %> }
-            3: { <%= name "invalid_modifier" %> }
+            1:<%= $scope->('string_quote_end') %>
+            2:<%= $scope->('string_regexp_modifier') %>
+            3:<%= $scope->('invalid_modifier') %>
         patterns:
         -
             begin: |-
@@ -476,12 +488,12 @@ for (
                     ( \w+ \s* )
                 )
             beginCaptures:
-                1: { <%= name "keyword_string" %> }
-                2: { <%= name "string_quote_begin" %> }
+                1:<%= $scope->('keyword_string') %>
+                2:<%= $scope->('string_quote_begin') %>
             endCaptures:
-                1: { <%= name "string_quote_begin", "string_quote_end" %> }
-                2: { <%= name "string_single" %> }
-                3: { <%= name "string_double" %> }
+                1:<%= $scope->('string_quote_begin', 'string_quote_end') %>
+                2:<%= $scope->('string_single') %>
+                3:<%= $scope->('string_double') %>
             patterns:
             - include: '#<%= $first_include %>'
         -
@@ -510,7 +522,7 @@ for (
         (?! [>=])
     name: meta.string.glob
     captures:
-        1: { <%= name "string_glob" %> }
+        1:<%= $scope->('string_glob') %>
 -
     match: |
         (?x)
@@ -520,7 +532,7 @@ for (
             \g<-1> \s*
         )}
     captures:
-        1: { <%= name "string_autoquoted" %> }
+        1:<%= $scope->('string_autoquoted') %>
 -
     begin: |-
         \b(?:CORE::)?__(?:END|DATA)__(?!\w|::|'[^\W\d])[\d\D]*
@@ -549,8 +561,8 @@ for (
         (?!\w|::|'[^\W\d])
     name: meta.control.labelled.perl
     captures:
-        1: { <%= name "keyword_control" %> }
-        2: { <%= name "label" %> }
+        1:<%= $scope->('keyword_control') %>
+        2:<%= $scope->('label') %>
 -
     match: |-
         \b(?:CORE::)?(?:break|continue|default|dump|else|elsif|for|foreach|given|goto|if|last|next|redo|return|unless|until|when|while)(?!\w|::|'[^\W\d])
@@ -592,8 +604,8 @@ for (
         ^\.\s*$
     name: meta.format.perl
     beginCaptures:
-        1: { <%= name "keyword_function" %> }
-        2: { <%= name "filehandle" %> }
+        1:<%= $scope->('keyword_function') %>
+        2:<%= $scope->('filehandle') %>
     patterns:
     -
         begin: |-
@@ -618,8 +630,8 @@ for (
         )
     name: meta.package.perl
     captures:
-        1: { <%= name "keyword_control" %> }
-        2: { <%= name "string_autoquoted" %> }
+        1:<%= $scope->('keyword_control') %>
+        2:<%= $scope->('string_autoquoted') %>
 -
     begin: |
         (?x)
@@ -645,9 +657,9 @@ for (
         (?<= [)] )
     name: meta.function.perl
     beginCaptures:
-        1: { <%= name "keyword_control" %> }
-        2: { <%= name "function" %> }
-        3: { <%= name "sub_name" %> }
+        1:<%= $scope->('keyword_control') %>
+        2:<%= $scope->('function') %>
+        3:<%= $scope->('sub_name') %>
     patterns:
     -
         begin: '\('
@@ -689,15 +701,15 @@ for (
             )
     name: meta.function.filehandle.perl
     captures:
-        1: { <%= name "keyword_function" %> }
-        2: { <%= name "filehandle" %> }
-        3: { <%= name "filehandle" %> }
-        4: { <%= name "keyword_function" %> }
-        5: { <%= name "keyword_filetest" %> }
-        7: { <%= name "filehandle" %> }
+        1:<%= $scope->('keyword_function') %>
+        2:<%= $scope->('filehandle') %>
+        3:<%= $scope->('filehandle') %>
+        4:<%= $scope->('keyword_function') %>
+        5:<%= $scope->('keyword_filetest') %>
+        7:<%= $scope->('filehandle') %>
 -
     match: |-
-        -[ABCMORSTWXbcdefgkloprstuwxz](?<!\w..)
+        -[ABCMORSTWXbcdefgkloprstuwxz](?<!\w..)(?!\w|::|'[^\W\d])
     name: <%= scope "keyword_filetest" %>
 -
     match: |
@@ -730,8 +742,8 @@ for (
         ((?!')(?:(?:::|'?[^\W\d])\w*+)++)
     name: meta.operator.arrow.perl
     captures:
-        1: { <%= name "string_autoquoted" %> }
-        2: { <%= name "method" %> }
+        1:<%= $scope->('string_autoquoted') %>
+        2:<%= $scope->('method') %>
 -
     match: |
         (?xi)
@@ -822,10 +834,13 @@ sub bracket_characters {
 sub recursive_brackets {
     my ($name) = @_;
     if ($bopen) {
-        return << "";
+        return << "#";
             -
-                { begin: '$bopen', end: '$bclose', patterns: [ include: '#$name' ] }
-
+                begin: '$bopen'
+                end: '$bclose'
+                patterns:
+                - include: '#$name'
+#
     }
 }
 
@@ -867,7 +882,7 @@ sub e {
                 match: |-
                     (\\)[<%= $open.$bclose %>\\]
                 captures:
-                    1: { <%= name "string_escape" %> }
+                    1:<%= $scope->('string_escape') %>
             <%= recursive_brackets "single" =%>
         % }
     double:
@@ -905,8 +920,8 @@ sub e {
                     |
                     (\\)[\d\D]
                 captures:
-                    1: { <%= name "string_escape" %> }
-                    2: { <%= name "string_escape" %> }
+                    1:<%= $scope->('string_escape') %>
+                    2:<%= $scope->('string_escape') %>
             <%= recursive_brackets "double" =%>
         % }
     double_or_single:
@@ -947,7 +962,7 @@ sub e {
             - include: '#double'
     line_comment:
         match: |-
-            #[\d\D]*
+            \#[\d\D]*
         name: <%= scope "comment_line" %>
     pod:
         begin: |-
@@ -976,13 +991,13 @@ sub e {
                 ^(\1\2)(\3)$
             name: meta.heredoc.perl
             beginCaptures:
-                1: { <%= name "string_double" %> }
-                2: { <%= name "string_double" %> }
-                3: { <%= name "string_backtick" %> }
+                1:<%= $scope->('string_double') %>
+                2:<%= $scope->('string_double') %>
+                3:<%= $scope->('string_backtick') %>
             contentName: <%= scope "string_unquoted" %>
             endCaptures:
-                1: { <%= name "string_double" %> }
-                2: { <%= name "string_backtick" %> }
+                1:<%= $scope->('string_double') %>
+                2:<%= $scope->('string_backtick') %>
             patterns:
             - include: '#double'
         -
@@ -998,11 +1013,11 @@ sub e {
                 ^(\1\2)$
             name: meta.heredoc.single.perl
             beginCaptures:
-                1: { <%= name "string_single" %> }
-                2: { <%= name "string_single" %> }
+                1:<%= $scope->('string_single') %>
+                2:<%= $scope->('string_single') %>
             contentName: <%= scope "string_unquoted" %>
             endCaptures:
-                1: { <%= name "string_single" %> }
+                1:<%= $scope->('string_single') %>
     regex_quantifier_curly:
         % for my $n (10) {
         comment: >-
@@ -1041,6 +1056,6 @@ sub e {
             # not a quantifier, but we have to match something to prevent infinite recursion
             {\d*,?\d*}
         endCaptures:
-            1: { <%= name "string_regexp" %> }
+            1:<%= $scope->('string_regexp') %>
         % }
 ...
