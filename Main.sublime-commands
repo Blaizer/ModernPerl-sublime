@@ -1,0 +1,4 @@
+[
+    { "caption": "Preferences: ModernPerl Scope Settings – Default", "command": "open_file", "args": {"file": "${packages}/ModernPerl/ModernPerl-scopes-default.yaml.ep"} },
+    { "caption": "Preferences: ModernPerl Scope Settings – User", "command": "open_file", "args": {"file": "${packages}/ModernPerl/ModernPerl-scopes-user.yaml.ep"} }
+]

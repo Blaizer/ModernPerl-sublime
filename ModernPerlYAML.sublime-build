@@ -1,0 +1,5 @@
+{
+    "cmd": ["perl", "yaml2plist.pl"],
+    "working_dir": "${packages}/ModernPerl",
+    "selector": "source.ep source.yaml"
+}

@@ -18,104 +18,50 @@ firstLineMatch: |-
 patterns:
 <% {
     package Scopes; # different package so that Carp works
-    use YAML::Any qw(Load);
-    our $scopes = Load(<<'#');
+    use Carp;
+    use YAML::Any qw(LoadFile);
 
-        # I've separated the scopes from the language definition.
-        # The language below uses only the scopes defined here (well.. except for meta.whatever)
-        # I've broken it up enough and the list below is functionally flexible enough that you
-        # should be able to style everything to your needs without having to touch any real code.
+    # I've separated the scopes from the language definition. The language below uses only the
+    # scopes defined here (well.. except for meta.whatever). I've broken it up enough and the list
+    # below is functionally flexible enough that you should be able to style everything to your
+    # needs without having to touch any real code.
 
-        # You can use $ to refer to another entry in the list below.
-        # The name of one of these references can only contain letters, numbers, and underscores.
-        # You can refer to stuff higher up in the list, and you can even refer to stuff recursively.
-        # (just watch out for infinite recursion)
-
-        # You can mark an entry as "private" by prefixing its name with _.
-        # This denotes that it should only be used in the construction of the list.
-        # Also feel free to use # in the text below to comment out lines, just like this line.
-
-        # You can put a list of scopes into one entry. Just use the >- syntax.
-        # Things later in the list will be applied by Sublime first.
-        # So the scopes will be gone through backwards until your theme has a style for that scope.
-
-        # Documentation on standard scopes: http://manual.macromates.com/en/language_grammars
-        # An easy way of seeing what scopes a language uses is to install "ScopeAlways".
-        # Then just type to produce a colour in that language, and see the scope in the status bar.
-        # You can also try wading around in .tmTheme files to see what scopes they have rules for.
-
-        _keyword:         keyword.other
-        keyword_control:  keyword.control
-        keyword_function: $_keyword.function
-        keyword_string:   $keyword_function
-        keyword_filetest: $_keyword.filetest
-        keyword_operator: $_keyword.operator
-        keyword_token:    $_keyword.token
-        keyword_storage: >-
-            $_keyword.storage
-            storage.modifier
-            variable.parameter
-            variable.other.readwrite.global
-
-        sub_name:      entity.name.function
-        sub_prototype: storage.type.method
-
-        comment_line:  comment.line.number-sign
-        comment_block: comment.block
-        variable:      punctuation.definition.var
-        function:      support.function
-        method:        $function.method
-        number:        punctuation.definition.number
-
-        string_variable: $keyword_storage
-        string_escape:   constant.character.escape
-
-        string_single:   string.quoted.single
-        string_double:   string.quoted.double
-        string_backtick: string.interpolated
-        string_unquoted: string.unquoted
-        string_glob:     $string_double
-        string_version:  string.other.version
-
-        _autoquoted:       constant.language
-        string_autoquoted: $_autoquoted.string
-        label:             $_autoquoted.label
-        filehandle:        $_autoquoted.filehandle
-
-        string_regexp:          string.regexp
-        string_regexp_modifier: keyword.operator
-        string_transliteration: string.other.transliteration
-
-        string_quote_begin: punctuation.definition.string.begin
-        string_quote_end:   punctuation.definition.string.end
-        string_pair_begin:
-        string_pair_end:
-
-        # these are here just so that you can disable them
-        _error:           invalid.illegal
-        _bad:             invalid.deprecated
-        invalid_modifier: $_error
-        invalid_number:   $_error.number
-        invalid_pod_tab:  $_bad
-#
+    our %scopes = (
+        map {
+            my $file = "ModernPerl-scopes-$_.yaml.ep";
+            my @documents;
+            @documents = LoadFile($file) if -f $file;
+            @documents > 1 and warn "Ignoring documents after first document in $file";
+            my $doc = $documents[0] // {};
+            ref $doc eq "HASH" or die "Top-level structure must be a dict in $file";
+            % $doc;
+        } qw/default user/
+    );
 
     sub decode_scopes {
         return '' if !defined $_[0];
+
+        our @stack;
         $_[0] =~ s{\$(\w+)}{
-            exists $scopes->{$1} or die "Scope '$1' doesn't exist while decoding scopes";
-            decode_scopes($scopes->{$1});
-        }e;
+            exists $scopes{$1} or die "Reference to non-existant '\$$1' while decoding scopes";
+
+            grep $_ eq $1, @stack and die "Infinite recursion on '$_[0]' while decoding scopes";
+            {
+                push local(@stack), $1;
+                decode_scopes($scopes{$1});
+            }
+        }eg;
+
         return $_[0];
     }
-    decode_scopes($_) for values % $scopes;
+    decode_scopes($_) for values %scopes;
 
-    use Carp;
     sub scope {
         my $name = shift;
         my $scope = join " ", map {
             s/(^\w+)(.*)/$1/s;
-            exists $scopes->{$_} or Carp::croak "Scope '$_' doesn't exist";
-            defined $scopes->{$_} ? map("$_$2.perl", split /\s+/, $scopes->{$_}) : "''";
+            exists $scopes{$_} or Carp::croak "Scope '$_' doesn't exist";
+            defined $scopes{$_} and length $scopes{$_} ? map("$_$2.perl", split /\s+/, $scopes{$_}) : "''";
         } map $_, @_;
         return "$name$scope";
     }
@@ -569,10 +515,6 @@ for (
     name: <%= scope "keyword_control" %>
 -
     match: |-
-        \b(?:CORE::)?(?:do|eval)(?=\s*{)
-    name: <%= scope "keyword_control" %>
--
-    match: |-
         \b(?:CORE::)?(?:local|my|our|state)(?!\w|::|'[^\W\d])
     name: <%= scope "keyword_storage" %>
 -
@@ -620,17 +562,20 @@ for (
     match: |
         (?x)
         # autoquoting keywords
-        \b ( (?:CORE::)? (?:package|use|require|no) ) \s+
-        (
-            # not a version number
-            (?!v\d)
-            #
-            # package name - copied from variable
-            (?!')(?:(?:::|'?[^\W\d])\w*)+
+        \b ( (?:CORE::)? (?:package|use|require|no) )
+        (?:
+            \s+ (
+                # not a version number
+                (?!v\d)
+                # package name - copied from variable
+                (?!')(?:(?:::|'?[^\W\d])\w*)+
+            )
+            |
+            (?!\w|::|'[^\W\d])
         )
     name: meta.package.perl
     captures:
-        1:<%= $scope->('keyword_control') %>
+        1:<%= $scope->('keyword_package') %>
         2:<%= $scope->('string_autoquoted') %>
 -
     begin: |
