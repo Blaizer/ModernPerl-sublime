@@ -978,7 +978,11 @@ sub e {
                     2:<%= $scope->('string_backtick') %>
                     3:<%= $scope->('string_single') %>
                 patterns:
+                % if ($scope_selector eq 'source.perl') {
+                - include: '$self'
+                % } else {
                 - include: <%= $scope_selector %>
+                % }
             % }
             -
                 begin: |
