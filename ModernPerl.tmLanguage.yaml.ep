@@ -924,45 +924,110 @@ sub e {
         -
             begin: |
                 (?x)
-                <<
-                (?:
-                    (\w+)
+                << (?=
+                    \\? \w+
                     |
-                    \s* " ([^"]*) "
-                    |
-                    \s* ` ([^`]*) `
-                ) .* \n?
-            end: |-
-                ^(\1\2)(\3)$
+                    \s* (['"`]) .*? \1
+                )
+            end: '$'
             name: meta.heredoc.perl
-            beginCaptures:
-                1:<%= $scope->('string_double') %>
-                2:<%= $scope->('string_double') %>
-                3:<%= $scope->('string_backtick') %>
-            contentName: <%= scope "string_unquoted" %>
-            endCaptures:
-                1:<%= $scope->('string_double') %>
-                2:<%= $scope->('string_backtick') %>
             patterns:
-            - include: '#double'
-        -
-            begin: |
-                (?x)
-                <<
-                (?:
-                    \\ (\w+)
-                    |
-                    \s* ' ([^']*) '
-                ) .* \n?
-            end: |-
-                ^(\1\2)$
-            name: meta.heredoc.single.perl
-            beginCaptures:
-                1:<%= $scope->('string_single') %>
-                2:<%= $scope->('string_single') %>
-            contentName: <%= scope "string_unquoted" %>
-            endCaptures:
-                1:<%= $scope->('string_single') %>
+            <%
+            for (
+                [qw( CSS            source.css        )],
+                [qw( HTML           text.html.basic   )],
+                [qw( JS|JAVASCRIPT  source.js         )],
+                [qw( PERL           source.perl       )],
+                [qw( SQL            source.sql        )],
+                [qw( XML            text.xml          )],
+            ) {
+                my ($identifier, $scope_selector) = @$_;
+            %>
+            -
+                begin: |
+                    (?x)
+                    (?:
+                        (<%= $identifier %>) \b
+                        |
+                        \s* (["`'])
+                        (?:
+                            ((?<=") \s* (?:<%= $identifier %>))
+                            |
+                            ((?<=`) \s* (?:<%= $identifier %>))
+                            |
+                            (\s* (?:<%= $identifier %>))
+                        )
+                        (\2)
+                        |
+                        \\ (<%= $identifier %>) \b
+                    )
+                    .* \n?
+                end: |-
+                    ^(\1\3)(\4)(\5\7)$
+                beginCaptures:
+                    1:<%= $scope->('string_double') %>
+                    2:<%= $scope->('string_quote_begin') %>
+                    3:<%= $scope->('string_double') %>
+                    4:<%= $scope->('string_backtick') %>
+                    5:<%= $scope->('string_single') %>
+                    6:<%= $scope->('string_quote_end') %>
+                    7:<%= $scope->('string_single') %>
+                contentName: <%= $scope_selector %>.embedded.perl
+                endCaptures:
+                    1:<%= $scope->('string_double') %>
+                    2:<%= $scope->('string_backtick') %>
+                    3:<%= $scope->('string_single') %>
+                patterns:
+                - include: <%= $scope_selector %>
+            % }
+            -
+                begin: |
+                    (?x)
+                    (?:
+                        (\w+)
+                        |
+                        \s* (["`])
+                        (?:
+                            ((?<=") .*?)
+                            |
+                            (.*?)
+                        )
+                        (\2)
+                    )
+                    .* \n?
+                end: |-
+                    ^(\1\3)(\4)$
+                beginCaptures:
+                    1:<%= $scope->('string_double') %>
+                    2:<%= $scope->('string_quote_begin') %>
+                    3:<%= $scope->('string_double') %>
+                    4:<%= $scope->('string_backtick') %>
+                    5:<%= $scope->('string_quote_end') %>
+                contentName: <%= scope "string_unquoted" %>
+                endCaptures:
+                    1:<%= $scope->('string_double') %>
+                    2:<%= $scope->('string_backtick') %>
+                patterns:
+                - include: '#double'
+            -
+                begin: |
+                    (?x)
+                    (?:
+                        \\ (\w+)
+                        |
+                        \s* (') (.*?) (')
+                    )
+                    .* \n?
+                end: |-
+                    ^(\1\3)$
+                beginCaptures:
+                    1:<%= $scope->('string_single') %>
+                    2:<%= $scope->('string_quote_begin') %>
+                    3:<%= $scope->('string_single') %>
+                    4:<%= $scope->('string_quote_end') %>
+                contentName: <%= scope "string_unquoted" %>
+                endCaptures:
+                    1:<%= $scope->('string_single') %>
     regex_quantifier_curly:
         % for my $n (10) {
         comment: >-

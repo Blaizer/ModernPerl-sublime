@@ -101,3 +101,38 @@ And then we died again
 IT
 
 no
+
+<<CSS
+#s.a { background-color: #CCC }
+CSS
+
+<<\JAVASCRIPT
+function (foo) { return }
+JAVASCRIPT
+
+<<`HTML`
+<body><div id="foo">Hello</div></body>
+HTML
+
+  << "  JS"
+    if (/bar/) {}
+  JS
+
+sub foo {
+    # code folding works now
+    <<  '    PERL'
+       say "Hello " while 1;
+
+        <<"        SQL"
+            select * from FOO
+        SQL
+
+        <<`        XML`
+            <foo>
+                The thing I don't like about this is that I can't
+                inject more end patterns that end on 'XML' or whatever
+                within the embedded code. Pretty lame.
+            </foo>
+        XML
+    PERL
+}
