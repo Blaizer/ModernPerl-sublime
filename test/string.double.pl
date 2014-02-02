@@ -81,6 +81,27 @@
 "$  {  ::as'd::'asd'asd::'d::s'ds::  } "
 "$ {::as'd::'asd'asd }::'d::s'ds:: "
 "$ {::as'd::'asd'asd}'d::s'ds:: "
+"${foo}"
+"$ { foo }"
+"${3}"
+"$ { 8 }"
+"as$d{} ${ foo } doo ${ 3 } yup "
+"$\{foo}"
+"${foo\}"
+"$\{foo\}"
+"\${foo}"
+qq{${foo}}
+qq{$ { foo }}
+qq{${3}}
+qq{$ { 90 }}
+qq{as$d{} ${ foo } doo ${ 3 } yup }
+qq{$\{foo}
+qq{${foo\}}}
+qq{$\{foo\}}
+qq{\${foo}}
+qq{\$\{foo\}}
+qq{{${foo} $ {foo}}}
+qq{{$\{foo\} $ \{foo\}}}
 
 # Punctuation Variables
 "$$"          #"     $$

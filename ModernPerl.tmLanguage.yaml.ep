@@ -160,9 +160,9 @@ patterns:
 for (
     [ 'qw?', "(')", 'meta.string.q.perl',  'string_single',   'single' ],
     [ 'qq',  '(")', 'meta.string.qq.perl', 'string_double',   'double' ],
-    [ 'qx',  '(`)', 'meta.string.qx.perl', 'string_backtick', 'double', 'single' ],
-    [ 'qr',  undef, 'meta.regexp.qr.perl', 'string_regexp',   'double', 'single',   'adilmopsux' ],
-    [ 'm',   <<'#', 'meta.regexp.m.perl',  'string_regexp',   'double', 'single', 'acdgilmopsux' ],
+    [ 'qx',  '(`)', 'meta.string.qx.perl', 'string_backtick', 'double',        'single' ],
+    [ 'qr',  undef, 'meta.regexp.qr.perl', 'string_regexp',   'double_regexp', 'single',   'adilmopsux' ],
+    [ 'm',   <<'#', 'meta.regexp.m.perl',  'string_regexp',   'double_regexp', 'single', 'acdgilmopsux' ],
 # Guessing whether a / is a division or the start of a regex is pretty tricky!
         (?=\s*/) # optimisation to fail faster
         (?:
@@ -816,6 +816,26 @@ sub e {
     }
 }
 
+sub o {
+    my ($s) = @_;
+    for ($s) {
+        if ($open) {
+            s/([$open])/(\\\\?)\\$1/g;
+        }
+        return $_;
+    }
+}
+
+sub c {
+    my ($s) = @_;
+    for ($s) {
+        if ($close) {
+            s/([$close])/\\k<-1>\\$s/g;
+        }
+        return $_;
+    }
+}
+
 %>\
     single:
         patterns:
@@ -841,7 +861,11 @@ sub e {
                     (?x)
                     (
                         (?: <%=e '$'%> \s* | <%=e '@'%> )
-                        (?: \d+ | \w+ )
+                        (?:
+                            (?<normal_id> [^\W\d] \w* | \d+ )
+                            |
+                            <%=o '{'%> \s* \g<normal_id> \s* <%=c '}'%>
+                        )
                         |
                         <%=e '$'%> \s*
                     )
@@ -868,6 +892,47 @@ sub e {
                     1:<%= $scope->('string_escape') %>
                     2:<%= $scope->('string_escape') %>
             <%= recursive_brackets "double" =%>
+        % }
+    double_regexp:
+        patterns:
+        % while (quote_characters 1) {
+        -
+            <%= quote_begin_end =%>
+            patterns:
+            -
+                match: |
+                    (?x)
+                    (
+                        (?: <%=e '$'%> | <%=e '@'%> )
+                        (?:
+                            (?<normal_id> [^\W\d] \w* | \d+ )
+                            |
+                            <%=o '{'%> \s* \g<normal_id> \s* <%=c '}'%>
+                        )
+                    )
+                name: <%= scope "string_variable" %>
+            -
+                match: |
+                    (?x)
+                    (\\ (?:
+                        x(?: \h{1,2} <%#| {(?!__)[_\h]*}%>)
+                        |
+                        #o{(?!__)[_0-7]*}
+                        #|
+                        [0-7]{1,3}
+                        |
+                        #N{(?: (?!U\+)[^}]* | U\+(?:_?\h+)+ )}
+                        #|
+                        #c\p{ASCII}
+                        #|
+                        \p{Alnum}
+                    ))
+                    |
+                    (\\)[\d\D]
+                captures:
+                    1:<%= $scope->('string_escape') %>
+                    2:<%= $scope->('string_escape') %>
+            <%= recursive_brackets "double_regexp" =%>
         % }
     double_or_single:
         patterns:
@@ -904,7 +969,7 @@ sub e {
                 (?=(?!\1)\)|(?!\2)>|(?!\3)\]|(?!\4)\}|[\5[&&]])
             contentName: <%= scope "string_regexp" %>
             patterns:
-            - include: '#double'
+            - include: '#double_regexp'
     line_comment:
         match: |-
             \#[\d\D]*

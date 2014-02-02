@@ -248,3 +248,8 @@ CORE::y~dude~this~c
 CORE::y:no:way:c
 CORE::y(early)
 CORE::y<late>
+
+s/${foo}/${foo}/
+s/$\{foo\}/$\{foo\}/
+s{${foo} $ {foo}}{$ {foo}}
+s{{$\{foo\} $ \{foo\}}}{{$ \{foo\}}}
