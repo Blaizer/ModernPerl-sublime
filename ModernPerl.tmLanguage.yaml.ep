@@ -557,7 +557,7 @@ for (
         contentName: <%= scope "string_unquoted" %>
         patterns:
         - include: '#line_comment'
-        - include: '#variable'
+        %#- include: '#variable'
 -
     match: |
         (?x)
