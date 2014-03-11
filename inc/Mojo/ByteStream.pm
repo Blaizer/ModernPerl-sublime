@@ -12,8 +12,8 @@ our @EXPORT_OK = ('b');
 my @UTILS = (
   qw(b64_decode b64_encode camelize decamelize hmac_sha1_sum html_unescape),
   qw(md5_bytes md5_sum punycode_decode punycode_encode quote sha1_bytes),
-  qw(sha1_sum slurp spurt squish trim unquote url_escape url_unescape),
-  qw(xml_escape xor_encode)
+  qw(sha1_sum slurp spurt squish trim unindent unquote url_escape),
+  qw(url_unescape xml_escape xor_encode)
 );
 for my $name (@UTILS) {
   my $sub = Mojo::Util->can($name);
@@ -22,11 +22,6 @@ for my $name (@UTILS) {
     $$self = $sub->($$self, @_);
     return $self;
   };
-}
-
-sub new {
-  my $class = shift;
-  return bless \(my $dummy = join '', @_), ref $class || $class;
 }
 
 sub b { __PACKAGE__->new(@_) }
@@ -45,10 +40,16 @@ sub encode {
   return $self;
 }
 
+sub new {
+  my $class = shift;
+  return bless \(my $dummy = join '', @_), ref $class || $class;
+}
+
 sub say {
   my ($self, $handle) = @_;
   $handle ||= \*STDOUT;
   say $handle $$self;
+  return $self;
 }
 
 sub secure_compare { Mojo::Util::secure_compare ${shift()}, @_ }
@@ -91,12 +92,17 @@ Mojo::ByteStream - ByteStream
 
 =head1 DESCRIPTION
 
-L<Mojo::ByteStream> provides a more friendly API for the bytestream
-manipulation functions in L<Mojo::Util>.
+L<Mojo::ByteStream> is a scalar-based container for bytestreams that provides
+a more friendly API for many of the functions in L<Mojo::Util>.
+
+  # Access scalar directly to manipulate bytestream
+  my $stream = Mojo::ByteStream->new('foo');
+  $$stream .= 'bar';
 
 =head1 FUNCTIONS
 
-L<Mojo::ByteStream> implements the following functions.
+L<Mojo::ByteStream> implements the following functions, which can be imported
+individually.
 
 =head2 b
 
@@ -107,12 +113,6 @@ Construct a new scalar-based L<Mojo::ByteStream> object.
 =head1 METHODS
 
 L<Mojo::ByteStream> implements the following methods.
-
-=head2 new
-
-  my $stream = Mojo::ByteStream->new('test123');
-
-Construct a new scalar-based L<Mojo::ByteStream> object.
 
 =head2 b64_decode
 
@@ -193,6 +193,12 @@ Generate binary MD5 checksum for bytestream with L<Mojo::Util/"md5_bytes">.
 
 Generate MD5 checksum for bytestream with L<Mojo::Util/"md5_sum">.
 
+=head2 new
+
+  my $stream = Mojo::ByteStream->new('test123');
+
+Construct a new scalar-based L<Mojo::ByteStream> object.
+
 =head2 punycode_decode
 
   $stream = $stream->punycode_decode;
@@ -213,8 +219,8 @@ Quote bytestream with L<Mojo::Util/"quote">.
 
 =head2 say
 
-  $stream->say;
-  $stream->say(*STDERR);
+  $stream = $stream->say;
+  $stream = $stream->say(*STDERR);
 
 Print bytestream to handle and append a newline, defaults to C<STDOUT>.
 
@@ -286,7 +292,6 @@ Alias for L<Mojo::Base/"tap">.
 =head2 to_string
 
   my $str = $stream->to_string;
-  my $str = "$stream";
 
 Stringify bytestream.
 
@@ -296,6 +301,12 @@ Stringify bytestream.
 
 Trim whitespace characters from both ends of bytestream with
 L<Mojo::Util/"trim">.
+
+=head2 unindent
+
+  $stream = $stream->unindent;
+
+Unindent bytestream with C<Mojo::Util/"unindent">.
 
 =head2 unquote
 
@@ -335,11 +346,21 @@ bytestream with L<Mojo::Util/"xml_escape">.
 
 XOR encode bytestream with L<Mojo::Util/"xor_encode">.
 
-=head1 BYTESTREAM
+=head1 OPERATORS
 
-Direct scalar reference access to the bytestream is also possible.
+L<Mojo::ByteStream> overloads the following operators.
 
-  $$stream .= 'foo';
+=head2 bool
+
+  my $bool = !!$bytestream;
+
+Always true.
+
+=head2 stringify
+
+  my $str = "$bytestream";
+
+Alias for L</to_string>.
 
 =head1 SEE ALSO
 
