@@ -39,7 +39,7 @@ keyword_package:  $keyword_control.package  # keywords like package, use, no
 keyword_string:   $keyword_function         # keywords like qq, qw, m, s, tr
 keyword_filetest: $_keyword.filetest        # filetest operators like -f, -d, -X
 keyword_operator: $_keyword.operator        # named operators like eq, and, not, x
-keyword_token:    $_keyword.token           # special tokens like __PACKAGE__, __LINE__
+keyword_token:    $_autoquoted.token        # special tokens like __PACKAGE__, __LINE__
 keyword_function: $_keyword.function        # all other keywords like print, undef, exit
 
 # keywords like my and our
