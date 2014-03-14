@@ -820,8 +820,9 @@ sub e {
 sub o {
     my ($s) = @_;
     for ($s) {
-        if ($open) {
-            s/([$open])/(\\\\?)\\$1/g;
+        if ($bopen) {
+            s/([$bopen])/(\\\\?)\\$1/g
+                or $_ = quotemeta;
         }
         return $_;
     }
@@ -830,8 +831,9 @@ sub o {
 sub c {
     my ($s) = @_;
     for ($s) {
-        if ($close) {
-            s/([$close])/\\k<-1>\\$s/g;
+        if ($bclose) {
+            s/([$bclose])/\\k<-1>\\$s/g
+                or $_ = quotemeta;
         }
         return $_;
     }
@@ -860,79 +862,145 @@ sub c {
             -
                 match: |
                     (?x)
-                    (
-                        (?: <%=e '$'%> \s* | <%=e '@'%> )
-                        (?:
-                            (?<normal_id> [^\W\d] \w* | \d+ )
-                            |
-                            <%=o '{'%> \s* \g<normal_id> \s* <%=c '}'%>
+                    (?: <%=e '$'%> \s* | <%=e '@'%> )
+                    (?:
+                        (?<caret_id>
+                            <%=e '^'%> [^\W\d\p{Lower}]
                         )
                         |
-                        <%=e '$'%> \s*
+                        (?<normal_id>
+                            \d+
+                            |
+                            (?:
+                                (?: (?:<%=e '::'%>) | (?:<%=e "'"%>)?[^\W\d] ) \w*
+                            )++
+                            #|
+                            #[^[^!-~]{\w\s<%=$close%>]
+                        )
+                        |
+                        <%=o '{'%>
+                        \s* (?:
+                            \g<caret_id> \w* | \g<normal_id>
+                        ) \s*
+                        <%=c '}'%>
+                        |
+                        (?={)
                     )
+                    |
+                    <%=e '$'%> \s*
                 name: <%= scope "string_variable" %>
             -
                 match: |
                     (?x)
-                    (\\ (?:
-                        x(?: \h{1,2} <%#| {(?!__)[_\h]*}%>)
+                    \\ (?:
+                        x (?:
+                            \h{1,2}
+                            |
+                            <%=o '{'%> (?!__)[_\h]* <%=c '}'%>
+                        )
                         |
-                        #o{(?!__)[_0-7]*}
-                        #|
+                        o <%=o '{'%> (?!__)[_0-7]* <%=c '}'%>
+                        |
                         [0-7]{1,3}
                         |
-                        #N{(?: (?!U\+)[^}]* | U\+(?:_?\h+)+ )}
-                        #|
+                        N <%=o '{'%>
+                        (?:
+                            U<%=e '+'%> (?:_?\h+)++
+                            |
+                            (?! U<%=e '+'%> )
+                            (?:
+                                % if ($close !~ /[\\}]$/) {
+                                \\[\\<%=$close%>]
+                                |
+                                % }
+                                [^}<%=$close%>]
+                            )*+
+                        ) <%=c '}'%>
+                        |
                         #c\p{ASCII}
                         #|
                         \p{Alnum}
-                    ))
-                    |
+                    )
+                name: <%= scope 'string_escape' %>
+            -
+                match: |-
                     (\\)[\d\D]
                 captures:
                     1:<%= $scope->('string_escape') %>
-                    2:<%= $scope->('string_escape') %>
             <%= recursive_brackets "double" =%>
         % }
     double_regexp:
         patterns:
-        % while (quote_characters 1) {
+        % while (quote_characters) {
         -
             <%= quote_begin_end =%>
             patterns:
             -
                 match: |
                     (?x)
-                    (
-                        (?: <%=e '$'%> | <%=e '@'%> )
-                        (?:
-                            (?<normal_id> [^\W\d] \w* | \d+ )
-                            |
-                            <%=o '{'%> \s* \g<normal_id> \s* <%=c '}'%>
+                    (?: <%=e '$'%> | <%=e '@'%> )
+                    (?:
+                        (?<caret_id>
+                            <%=e '^'%> [^\W\d\p{Lower}]
                         )
+                        |
+                        (?<normal_id>
+                            \d+
+                            |
+                            (?:
+                                (?: (?:<%=e '::'%>) | (?:<%=e "'"%>)?[^\W\d] ) \w*
+                            )++
+                            #|
+                            #[^[^!-~]{\w\s<%=$close%>]
+                        )
+                        |
+                        <%=o '{'%>
+                        \s* (?:
+                            \g<caret_id> \w* | \g<normal_id>
+                        ) \s*
+                        <%=c '}'%>
+                        |
+                        (?={)
                     )
                 name: <%= scope "string_variable" %>
             -
                 match: |
                     (?x)
-                    (\\ (?:
-                        x(?: \h{1,2} <%#| {(?!__)[_\h]*}%>)
+                    \\ (?:
+                        x (?:
+                            \h{1,2}
+                            |
+                            <%=o '{'%> (?!__)[_\h]* <%=c '}'%>
+                        )
                         |
-                        #o{(?!__)[_0-7]*}
-                        #|
+                        o <%=o '{'%> (?!__)[_0-7]* <%=c '}'%>
+                        |
                         [0-7]{1,3}
                         |
-                        #N{(?: (?!U\+)[^}]* | U\+(?:_?\h+)+ )}
-                        #|
+                        N <%=o '{'%>
+                        (?:
+                            U<%=e '+'%> (?:_?\h+)++
+                            |
+                            (?! U<%=e '+'%> )
+                            (?:
+                                % if ($close !~ /[\\}]$/) {
+                                \\[\\<%=$close%>]
+                                |
+                                % }
+                                [^}<%=$close%>]
+                            )*+
+                        ) <%=c '}'%>
+                        |
                         #c\p{ASCII}
                         #|
                         \p{Alnum}
-                    ))
-                    |
+                    )
+                name: <%= scope 'string_escape' %>
+            -
+                match: |-
                     (\\)[\d\D]
                 captures:
                     1:<%= $scope->('string_escape') %>
-                    2:<%= $scope->('string_escape') %>
             <%= recursive_brackets "double_regexp" =%>
         % }
     double_or_single:

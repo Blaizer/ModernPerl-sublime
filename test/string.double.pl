@@ -1,5 +1,14 @@
 # A LOT OF DIFFERENT STUFF INTERPOLATES INTO PERL STRINGS OMFG
 
+# nothing
+"$"
+"${"
+"${}"
+"@"
+"@{"
+"@{}"
+"@ {"
+
 # Named Variables
 "$foo"                                     #"    $foo
 "$foo:"                                    #"    $foo . ":"
@@ -102,6 +111,12 @@ qq{\${foo}}
 qq{\$\{foo\}}
 qq{{${foo} $ {foo}}}
 qq{{$\{foo\} $ \{foo\}}}
+qq:$foo::bar
+qq:$'foo\:\:'as'dd\:\:\:\:'ag'd:
+qq:$  {  \:\:as'd\:\:'asd'asd\:\:'d\:\:s'ds\:\:  } :
+qq'$foo'bar
+qq'$\'foo::\'as\'dd::::\'ag\'d'
+qq'$  {  ::as\'d::\'asd\'asd::\'d::s\'ds::  } '
 
 # Punctuation Variables
 "$$"          #"     $$
@@ -244,6 +259,11 @@ qq{{$\{foo\} $ \{foo\}}}
 "${'S^O::}"               #}"   ${<'S^O::>}
 "${'S::^O}"               #}"   ${<'S::^O>}
 "${'S::^::O}"             #}"   ${<'S::^::O>}
+qq^$^^
+qq^$\^O^
+qq^$\^__^
+qq^${\^Stuffworks}^
+qq^${ \^_stuff__works__  }^
 
 # $ -> [] {}
 "$foo[]"
@@ -354,7 +374,7 @@ q(asd \(  \) ()() ( ((\)\())   \)  \(   )  ddd)
 "Yeah... \Qno way $I'm @messing with these\E... Too hard"
 "octals... \0000 \7777 \80344 \0yeah \o{} \o{_} \o{_12_} but not \o{ } \o{1f}  "
 "\x{} and \x{_} and \x{_dead_BEEF01_} \xA2f \x5n \x000 \xg but not \x{ } \x{boob}"
-"unicode... \N{U+0} \N{U+0f0af3} \N{U+_0_0} and \N{Everyth1ng ACC##PT*{([ED\}? Yeah."
+"unicode... \N{U+0} \N{U+0f0af3} \N{U+_0_0} and \N{} \N{Everyth1ng \"\\\" ACC##PT*{([ED\}? Yeah."
 "but not unicode \N{U+} \N{U+_} \N{U+__} \N{U+0_} \N{U+0__0}"
 "this shouldn't work: \N{Charname with quote    " in it}" #}"
 "this shouldn't work: \N{Charname with quote  \\" in it}" #}"
@@ -365,6 +385,7 @@ q(asd \(  \) ()() ( ((\)\())   \)  \(   )  ddd)
 "weird use of \c: \c\"" #"
 "weird use of \c: \c\\" #"
 "weird use of \c: \c\\n" #"
+qq{ \} \. \n \1 \000 \o{1234567} \x1f \x{12ef} \N{U+1f} \N{} \N{a\s\{\d\\\} \cA \c@ \c\ \c\{ \c\} }
 
 qq$inside this \$foo is actually a variable$
 qq@inside this \@foo is actually a variable@
