@@ -10,6 +10,7 @@ comment: Blaise Roth <blaizer@cpan.org>
 uuid: 2c338cc8-a464-4ee4-a56c-d524947fa6f9
 fileTypes:
 - pl
+- PL
 - pm
 - pod
 - t

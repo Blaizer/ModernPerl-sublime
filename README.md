@@ -7,7 +7,7 @@ Perl syntax highlighter for Sublime Text that isn't outdated
 
 ModernPerl is an updated Perl syntax highlighter for Sublime Text. It's a drop-in replacement for the outdated `Perl.tmLanguage` that comes default with Sublime Text. The name "ModernPerl" was mostly just chosen as a joke to follow the Modern::Perl buzzword thing. Well... it is a modern syntax definition for Perl, and among many bug fixes, it does implement some of Perl's new syntax.
 
-It may be a bit tricky to get all your Perl files to open with the ModernPerl syntax. Make sure you read the **Install** section for the steps that might be required. In any case **check that your files are opened with ModernPerl**. This information is shown on the far right of the status bar.
+It may be a bit tricky to get all your Perl files to open with the ModernPerl syntax. Make sure you read the **Install** section for the steps that might be required. In any case **check that your files are opened with ModernPerl** once it is installed. This information is shown on the far right of the status bar.
 
 ModernPerl uses only the standard highlighting colors, so it should be compatible with your favorite theme. It was, however, designed and tested with the default Monokai theme, so it's most optimal with that.
 
@@ -27,12 +27,12 @@ As well as many other highlighting fixes and nuances.
 
 1.  Install this package with Package Control (or otherwise).
 2.  In Sublime, use *View > Syntax > Open all with current extension as...* to reopen all current Perl files with ModernPerl.
-3.  Fresh Perl files should automatically open with ModernPerl, while Perl files that have previously been opened with Sublime will tend to keep the syntax they were opened with.
+3.  Fresh Perl files should automatically open with ModernPerl, while Perl files that have previously been opened with Sublime will tend to keep the syntax they were last opened with.
 
-    To check this, open a Perl file that has never been opened by Sublime before (create a new *.pl* file if necessary), and check that it opens with ModernPerl.
+    To check this, open a Perl file that has never been opened with Sublime before (create a new *.pl* file if necessary), and check that it opens with ModernPerl.
 4.  If fresh files do not open with ModernPerl, use *Preferences > Settings — Syntax Specific — User* on a **file opened with ModernPerl** to open up *ModernPerl.sublime-settings* and put the following into it:
 
-    `{ "extensions": ["pl", "pm", "pod", "t"] }`
+    `{ "extensions": ["pl", "PL", "pm", "pod", "t"] }`
 5.  Whenever you open a Perl file that has previously been opened with Sublime, check which syntax it opens with, and manually switch it to ModernPerl if necessary.
 
 ## Todo
