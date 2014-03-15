@@ -82,6 +82,11 @@ string_regexp_modifier: keyword.operator  # m//modifiers, s///modifiers
 string_autoquoted: $_autoquoted.string
 _autoquoted:       constant.language
 
+# Foo::Bar in package Foo::Bar
+string_package: >-
+    entity.name.type.class
+    $string_autoquoted
+
 # LABEL: {} or last LABEL
 label:       $_autoquoted.label
 filehandle:  $_autoquoted.filehandle  # close FILEHANDLE or accept SOCK, SOCK2

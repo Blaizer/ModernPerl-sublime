@@ -562,8 +562,24 @@ for (
 -
     match: |
         (?x)
+        \b ( (?:CORE::)? package )
+        (?:
+            \s+ (
+                # package name - copied from variable
+                (?!')(?:(?:::|'?[^\W\d])\w*)+
+            )
+            |
+            (?!\w|::|'[^\W\d])
+        )
+    name: meta.class.perl
+    captures:
+        1:<%= $scope->('keyword_package') %>
+        2:<%= $scope->('string_package') %>
+-
+    match: |
+        (?x)
         # autoquoting keywords
-        \b ( (?:CORE::)? (?:package|use|require|no) )
+        \b ( (?:CORE::)? (?:use|require|no) )
         (?:
             \s+ (
                 # not a version number
@@ -574,7 +590,6 @@ for (
             |
             (?!\w|::|'[^\W\d])
         )
-    name: meta.package.perl
     captures:
         1:<%= $scope->('keyword_package') %>
         2:<%= $scope->('string_autoquoted') %>
