@@ -351,6 +351,19 @@ qq^${ \^_stuff__works__  }^
 # and then all the stuff where -> becomes a string
 # perhaps some testing of what you can nest inside [] {}
 
+# recursivisity
+"$"
+"$$"
+"$ $"
+"$$a"
+"$ $a"
+"$$ a"
+"@$a"
+"@$ a"
+"@ $a"
+"$ {@{ $ $aaa }}"
+"$${ @$${ a } }"
+
 # even harder $$, ${}
 # @, @name->, @name[] @name{}, @@, @{}
 # ->$* ->@* ->@[] ->@{}

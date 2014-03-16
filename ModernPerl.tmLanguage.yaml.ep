@@ -877,32 +877,41 @@ sub c {
             -
                 match: |
                     (?x)
-                    (?: <%=e '$'%> \s* | <%=e '@'%> )
-                    (?:
-                        (?<caret_id>
-                            <%=e '^'%> [^\W\d\p{Lower}]
-                        )
+                    (?<variable>
+                        <%=e '@'%> \g<scalar_identifier>
                         |
-                        (?<normal_id>
-                            \d+
+                        <%=e '$'%> \s*
+                        (?<scalar_identifier>
+                            (?<scalar>
+                                (?:<%=e '$'%>)+
+                                (?<identifier>
+                                    (?<caret_id>
+                                        <%=e '^'%> [^\W\d\p{Lower}]
+                                    )
+                                    |
+                                    (?<normal_id>
+                                        \d+
+                                        |
+                                        (?:
+                                            (?: (?:<%=e '::'%>) | (?:<%=e "'"%>)?[^\W\d] ) \w*
+                                        )++
+                                        # |
+                                        # [^[^!-~]{\w\s<%=$close%>]
+                                    )
+                                    |
+                                    <%=o '{'%>
+                                    \s* (?:
+                                        \g<variable> | \g<caret_id> \w* | \g<normal_id>
+                                    ) \s*
+                                    <%=c '}'%>
+                                    |
+                                    (?=<%=e '{'%>)
+                                )
+                            )
                             |
-                            (?:
-                                (?: (?:<%=e '::'%>) | (?:<%=e "'"%>)?[^\W\d] ) \w*
-                            )++
-                            #|
-                            #[^[^!-~]{\w\s<%=$close%>]
-                        )
-                        |
-                        <%=o '{'%>
-                        \s* (?:
-                            \g<caret_id> \w* | \g<normal_id>
-                        ) \s*
-                        <%=c '}'%>
-                        |
-                        (?={)
+                            \g<identifier>
+                        )?
                     )
-                    |
-                    <%=e '$'%> \s*
                 name: <%= scope "string_variable" %>
             -
                 match: |
@@ -953,29 +962,40 @@ sub c {
             -
                 match: |
                     (?x)
-                    (?: <%=e '$'%> | <%=e '@'%> )
-                    (?:
-                        (?<caret_id>
-                            <%=e '^'%> [^\W\d\p{Lower}]
-                        )
+                    (?<variable>
+                        <%=e '@'%> \g<scalar_identifier>
                         |
-                        (?<normal_id>
-                            \d+
+                        <%=e '$'%>
+                        (?<scalar_identifier>
+                            (?<scalar>
+                                (?:<%=e '$'%>)+
+                                (?<identifier>
+                                    (?<caret_id>
+                                        <%=e '^'%> [^\W\d\p{Lower}]
+                                    )
+                                    |
+                                    (?<normal_id>
+                                        \d+
+                                        |
+                                        (?:
+                                            (?: (?:<%=e '::'%>) | (?:<%=e "'"%>)?[^\W\d] ) \w*
+                                        )++
+                                        # |
+                                        # [^[^!-~]{\w\s<%=$close%>]
+                                    )
+                                    |
+                                    <%=o '{'%>
+                                    \s* (?:
+                                        \g<variable> | \g<caret_id> \w* | \g<normal_id>
+                                    ) \s*
+                                    <%=c '}'%>
+                                    |
+                                    (?=<%=e '{'%>)
+                                )
+                            )
                             |
-                            (?:
-                                (?: (?:<%=e '::'%>) | (?:<%=e "'"%>)?[^\W\d] ) \w*
-                            )++
-                            #|
-                            #[^[^!-~]{\w\s<%=$close%>]
+                            \g<identifier>
                         )
-                        |
-                        <%=o '{'%>
-                        \s* (?:
-                            \g<caret_id> \w* | \g<normal_id>
-                        ) \s*
-                        <%=c '}'%>
-                        |
-                        (?={)
                     )
                 name: <%= scope "string_variable" %>
             -
