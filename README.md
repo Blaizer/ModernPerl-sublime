@@ -30,7 +30,7 @@ As well as many other highlighting fixes and nuances.
 3.  Fresh Perl files should automatically open with ModernPerl, while Perl files that have previously been opened with Sublime will tend to keep the syntax they were last opened with.
 
     To check this, open a Perl file that has never been opened with Sublime before (create a new *.pl* file if necessary), and check that it opens with ModernPerl.
-4.  If fresh files do not open with ModernPerl, use *Preferences > Settings — Syntax Specific — User* on a **file opened with ModernPerl** to open up *ModernPerl.sublime-settings* and put the following into it:
+4.  If fresh files do not open with ModernPerl, use *Preferences > Settings – Syntax Specific – User* on a **file opened with ModernPerl** to open up *ModernPerl.sublime-settings* and put the following into it:
 
     `{ "extensions": ["pl", "PL", "pm", "pod", "t"] }`
 5.  Whenever you open a Perl file that has previously been opened with Sublime, check which syntax it opens with, and manually switch it to ModernPerl if necessary.
