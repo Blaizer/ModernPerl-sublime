@@ -5,8 +5,8 @@ package YAML::Tiny;
 BEGIN {
   $YAML::Tiny::AUTHORITY = 'cpan:ADAMK';
 }
-# git description: v1.60-1-g1c16a0a
-$YAML::Tiny::VERSION = '1.61';
+# git description: v1.61-3-g0a82466
+$YAML::Tiny::VERSION = '1.62';
 # XXX-INGY is 5.8.1 too old/broken for utf8?
 # XXX-XDG Lancaster consensus was that it was sufficient until
 # proven otherwise
@@ -152,7 +152,7 @@ my %QUOTE = map { $_ => 1 } qw{
 my $re_capture_double_quoted = qr/\"([^\\"]*(?:\\.[^\\"]*)*)\"/;
 my $re_capture_single_quoted = qr/\'([^\']*(?:\'\'[^\']*)*)\'/;
 # unquoted re gets trailing space that needs to be stripped
-my $re_capture_unquoted_key  = qr/([^:]+(?::+\S[^:]*)*)(?=\s*\:(?:\s+|$))/;
+my $re_capture_unquoted_key  = qr/([^:]+(?::+\S(?:[^:]*|.*?(?=:)))*)(?=\s*\:(?:\s+|$))/;
 my $re_trailing_comment      = qr/(?:\s+\#.*)?/;
 my $re_key_value_separator   = qr/\s*:(?:\s+(?:\#.*)?|$)/;
 
@@ -829,10 +829,7 @@ sub _can_flock {
 
 BEGIN {
     local $@;
-    if ( eval { require Scalar::Util }
-      && $Scalar::Util::VERSION
-      && eval($Scalar::Util::VERSION) >= 1.18
-    ) {
+    if ( eval { require Scalar::Util; Scalar::Util->VERSION(1.18); } ) {
         *refaddr = *Scalar::Util::refaddr;
     }
     else {
@@ -880,7 +877,7 @@ YAML::Tiny - Read/Write YAML files with as little code as possible
 
 =head1 VERSION
 
-version 1.61
+version 1.62
 
 =head1 PREAMBLE
 
