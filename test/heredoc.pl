@@ -51,6 +51,28 @@ say ord "F", chomp(my $f = <<"1`)2%+-*\34567"), ord "f";
 1`)2%+-*\34567
 no
 
+# dont highlight << followed by a number as a heredoc
+<<0
+<<3
+<<123
+<<$foo
+<<_2
+_2
+# but \ number is probably a heredoc
+<<\2
+2
+
+# these never highlight
+<< foo
+<< \foo
+<< \ foo
+# but these do
+<< "foo"
+foo
+<< 'foo'
+foo
+
+
 ### Stacking heredocs on one line isn't implemented yet! ###
 
 say <<DOUBLE, <<'STACK';

@@ -795,7 +795,7 @@ sub bracket_characters {
 sub recursive_brackets {
     my ($name) = @_;
     if ($bopen) {
-        return << "#";
+        return <<"#";
             -
                 begin: '$bopen'
                 end: '$bclose'
@@ -807,18 +807,18 @@ sub recursive_brackets {
 
 sub quote_begin_end {
     if ($open) {
-        return <<"";
+        return <<"#";
             begin: |-
                 (?<=$open)
             end: |-
                 (?=$close)
-
+#
     }
     else {
-        return <<'';
+        return <<'#';
             begin: '^'
             end: '\n|(?<=\n)'
-
+#
     }
 }
 
@@ -1094,7 +1094,9 @@ sub c {
             begin: |
                 (?x)
                 << (?=
-                    \\? \w+
+                    [^\W\d]\w*
+                    |
+                    \\ \w*
                     |
                     \s* (['"`]) .*? \1
                 )
