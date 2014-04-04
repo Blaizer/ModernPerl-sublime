@@ -697,10 +697,10 @@ for (
             (?=[^[^\w:]\d])(?<!\w)
             (\g<2>)
         )?
-        -> \s*
+        \s* -> \s*
         #
         # method name
-        ((?!')(?:(?:::|'?[^\W\d])\w*+)++)
+        (?!')((?:(?:::|'?[^\W\d])\w*+)++)
     name: meta.operator.arrow.perl
     captures:
         1:<%= $scope->('string_autoquoted') %>
