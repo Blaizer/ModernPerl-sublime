@@ -104,3 +104,4 @@ _bad:             invalid.deprecated
 invalid_number:   $_error.number
 invalid_modifier: $_error             # regex modifiers
 invalid_pod_tab:  $_bad               # tab characters within POD
+invalid_else_if:  $_error.else_if

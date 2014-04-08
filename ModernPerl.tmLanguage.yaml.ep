@@ -512,6 +512,10 @@ for (
         2:<%= $scope->('label') %>
 -
     match: |-
+        \belse\s+if(?!\w|::|'[^\W\d])
+    name: <%= scope "invalid_else_if" %>
+-
+    match: |-
         \b(?:CORE::)?(?:break|continue|default|dump|else|elsif|for|foreach|given|goto|if|last|next|redo|return|unless|until|when|while)(?!\w|::|'[^\W\d])
     name: <%= scope "keyword_control" %>
 -
