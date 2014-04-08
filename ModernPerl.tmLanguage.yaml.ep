@@ -692,19 +692,21 @@ for (
 -
     match: |
         (?x)
-        # class name
-        (?:
-            (?=[^[^\w:]\d])(?<!\w)
-            (\g<2>)
-        )?
-        \s* -> \s*
-        #
-        # method name
-        (?!')((?:(?:::|'?[^\W\d])\w*)++)
-    name: meta.operator.arrow.perl
+        # class before ->
+        (?=[^[^\w:]\d])(?<!\w)
+        ((?:(?:::|'?[^\W\d])\w*)++)
+        \s*+ ->
     captures:
         1:<%= $scope->('string_autoquoted') %>
-        2:<%= $scope->('method') %>
+-
+    match: |
+        (?x)
+        # method after ->
+        -> \s*
+        (?!')
+        ((?:(?:::|'?[^\W\d])\w*)++)
+    captures:
+        1:<%= $scope->('method') %>
 -
     match: |
         (?xi)
