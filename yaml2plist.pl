@@ -143,7 +143,7 @@ sub convert {
 		$item =~ s/</&lt;/g;
 		$item =~ s/>/&gt;/g;
 		# use CDATA unless it costs us more characters than not using it
-		if (length($item) - length $orig_item >= length "<![CDATA[]]>") {
+		if (length $item >= 12 + length $orig_item) {
 			$item = "<![CDATA[$orig_item]]>" if $orig_item !~ /]]>/;
 		}
 
