@@ -59,7 +59,7 @@ if ($infile =~ /.ep$/i) {
 	}
 	my ($name, $dir) = fileparse $outfile;
 	my $yamloutfile = catfile $dir, ".$name.yaml";
-	printout $yamloutfile, <<"YAML", $yaml;
+	printout $yamloutfile, <<YAML, $yaml;
 %YAML 1.1
 #
 # This file was generated automatically by $0 from $infilename.
@@ -111,7 +111,7 @@ while ($yaml =~
 
 my ($tree) = Load $yaml;
 my $xml = convert $tree, 1;
-printout $outfile, <<"XML", $xml, "</plist>\n";
+printout $outfile, <<XML, $xml, "</plist>\n";
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
