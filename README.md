@@ -15,7 +15,7 @@ ModernPerl uses only the standard highlighting colors, so it should be compatibl
 
 Compared to the original `Perl.tmLanguage`:
 
-  * Huge update to `//`, `s{}{}`. See `messages/2014.01.05.pl` for details
+  * Huge update to `//`, `s{}{}`. See *messages/2014.01.05.pl* for details
   * Highlights functions as best as it can, so less stuff is white
   * Many different kinds of barewords are recognized so that they're not highlighted as functions
   * New Perl keywords such as `say` and `state` are recognized
