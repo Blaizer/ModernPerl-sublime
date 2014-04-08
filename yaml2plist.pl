@@ -88,7 +88,7 @@ while ($yaml =~
 	}gmx
 ) {
 	my ($lines, $taker, $minus, $x) = ($1, $3, $4, $5);
-	my $multiline = $lines =~ /(?:.*\n){3,}/;
+	my $multiline = $lines =~ /(?:.*\n){3}/;
 
 	my $bad;
 	if ($multiline and !$x and $taker eq "|") {
