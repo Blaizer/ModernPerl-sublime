@@ -88,8 +88,8 @@ string_package: >-
     $string_autoquoted
 
 # LABEL: {} or last LABEL
-label:       $_autoquoted.label
-filehandle:  $_autoquoted.filehandle  # close FILEHANDLE or accept SOCK, SOCK2
+label:      $_autoquoted.label
+filehandle: $_autoquoted.filehandle  # close FILEHANDLE or accept SOCK, SOCK2
 
 # string quotes (the // in qw//) or pairs (the () in qw())
 string_quote_begin: punctuation.definition.string.begin
