@@ -481,8 +481,14 @@ for (
     captures:
         1:<%= $scope->('string_autoquoted') %>
 -
-    begin: |-
-        \b(?:CORE::)?__(?:END|DATA)__(?!\w|::|'[^\W\d])[\d\D]*
+    begin: |
+        (?x)
+        (?:
+            \b (?:CORE::)? __(?:END|DATA)__ (?!\w|::|'[^\W\d])
+            |
+            [\cD\cZ]
+        )
+        [\d\D]*
     end: |-
         (?!) # the end has no end
     name: <%= scope "comment_block" %>
