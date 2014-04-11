@@ -5,16 +5,16 @@
 # Text 3. You can safely ignore that this is even possible.
 
 # To modify the definitions in this file, simply override them in the user settings file. To disable
-# one of these definitions, override it, but leave the value blank. Remember to build either of the
-# settings files once you've made any changes. YAML::Tiny is quite buggy, and if it's giving you
+# one of these definitions, override it, but leave the value blank. You should then run
+# yaml2plist.pl to rebuild ModernPerl.tmLanguage. YAML::Tiny is quite buggy, and if it's giving you
 # unhelpful error messages then consider installing YAML::XS yourself. It will automatically be
 # chosen above YAML::Tiny if it's installed.
 
 # You can use $ to refer to another entry in the list. The name of one of these references can only
 # contain letters, numbers, and underscores. You can refer to stuff further down in the list, and
 # recursive references even work (just watch out of infinite recursion). You can refer to stuff in
-# this file from the other settings file, but, since Scope Settings are still experimental, beware
-# that this file could change from update to update without notice.
+# this file from the other settings file, but, since this is still experimental, beware that this
+# file could change from update to update without notice.
 
 # Entries prefixed with a _ are "private". This denotes that they are only be used in the
 # construction of the list. All other entries here are used somewhere in ModernPerl. I tried to
@@ -30,8 +30,8 @@
 # scopes each language has rules for.
 
 # Documentation:
-    # Standard scopes: http://manual.macromates.com/en/language_grammars#naming_conventions Scope
-    # ranking: http://manual.macromates.com/en/scope_selectors#ranking_matches
+    # Standard scopes: http://manual.macromates.com/en/language_grammars#naming_conventions
+    # Scope ranking: http://manual.macromates.com/en/scope_selectors#ranking_matches
 
 _keyword:         keyword.other
 keyword_control:  keyword.control           # keywords like if, sub, return, last
