@@ -6,17 +6,27 @@ yaml2plist.pl - Convert a YAML file to an XML plist file
 
 =head1 SYNOPSIS
 
- perl yaml2plist.pl [OUTFILE [INFILE]]
+perl yaml2plist.pl [<outfile> [<infile>]]
 
 =head1 OPTIONS
 
-OUTFILE should be the name of the plist file to output. The default is
-ModernPerl.tmLanguage. The file will be overwritten if it exists.
+=over
 
-INFILE should be the name of the YAML file to convert to plist. The default is
-ModernPerl.tmLanguage.yaml.ep If the file ends in .ep, it will first be
-interpreted as Extended Perl and outputted to .OUTFILE.yaml. Then that new
-file will be used as INFILE.
+=item <outfile>
+
+The name of the plist file to output. The default is F<ModernPerl.tmLanguage>.
+The file will be overwritten if it exists.
+
+=item <infile>
+
+The name of the YAML file to convert to plist. The default is
+F<ModernPerl.tmLanguage.yaml.ep>. If the file ends in F<.ep>, it will first be
+interpreted as L<Extended
+Perl|http://mojolicio.us/perldoc/Mojolicious/Guides/Rendering#Embedded_Perl> and
+outputted to F<< .<outfile>.yaml >>. Then that new file will be used as
+<infile>.
+
+=back
 
 =cut
 
