@@ -610,7 +610,7 @@ for (
             ( (?:CORE::)? sub )
         |
             # non-standard sub definitions
-            (method|func|before|after|around|trigger|build|set)
+            (method|func|before|after|around)
         )
         #
         # sub name - copied from variable
