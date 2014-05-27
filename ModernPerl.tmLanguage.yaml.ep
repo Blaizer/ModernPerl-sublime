@@ -948,7 +948,7 @@ sub c {
                             )*+
                         ) <%=c '}'%>
                         |
-                        #c\p{ASCII}
+                        #c [^\P{ASCII}{]
                         #|
                         \p{Alnum}
                     )
@@ -1033,7 +1033,7 @@ sub c {
                             )*+
                         ) <%=c '}'%>
                         |
-                        #c\p{ASCII}
+                        #c [^\P{ASCII}{]
                         #|
                         \p{Alnum}
                     )
