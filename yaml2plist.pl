@@ -87,7 +87,7 @@ else {
 # search for some common mistakes
 while ($yaml =~
 	m{
-		\G [\d\D]*? ^
+		\G (?s:.*?) ^
 		(
 			(\h+) \w+\h*:\h+ ([|>]) (-?) .*\n
 
