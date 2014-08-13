@@ -240,7 +240,7 @@ sub render_file {
   $self->name($path) unless defined $self->{name};
   my $template = slurp $path;
   my $encoding = $self->encoding;
-  croak qq{Template "$path" has invalid encoding.}
+  croak qq{Template "$path" has invalid encoding}
     if $encoding && !defined($template = decode $encoding, $template);
 
   return $self->render($template, @_);
@@ -373,6 +373,11 @@ L<Mojo::ByteStream> objects are always excluded from automatic escaping.
   % use Mojo::ByteStream 'b';
   <%= b('<div>excluded!</div>') %>
 
+Whitespace characters around tags can be trimmed by adding an additional equal
+sign to the end of a tag.
+
+  <%= All whitespace characters around this expression will be trimmed =%>
+
 Newline characters can be escaped with a backslash.
 
   This is <%= 1 + 1 %> a\
@@ -384,10 +389,6 @@ backslash.
   This will <%= 1 + 1 %> result\\
   in multiple\\
   lines
-
-Whitespace characters around tags can be trimmed with a special tag ending.
-
-  <%= All whitespace characters around this expression will be trimmed =%>
 
 You can capture whole template blocks for reuse later with the C<begin> and
 C<end> keywords.
@@ -501,10 +502,15 @@ Encoding used for template files.
 =head2 escape
 
   my $cb = $mt->escape;
-  $mt    = $mt->escape(sub { reverse $_[0] });
+  $mt    = $mt->escape(sub {...});
 
 A callback used to escape the results of escaped expressions, defaults to
 L<Mojo::Util/"xml_escape">.
+
+  $mt->escape(sub {
+    my $str = shift;
+    return reverse $str;
+  });
 
 =head2 escape_mark
 

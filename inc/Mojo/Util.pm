@@ -11,6 +11,7 @@ use File::Basename 'dirname';
 use File::Spec::Functions 'catfile';
 use List::Util 'min';
 use MIME::Base64 qw(decode_base64 encode_base64);
+use Symbol 'delete_package';
 use Time::HiRes ();
 
 # Check for monotonic clock support
@@ -56,9 +57,6 @@ our @EXPORT_OK = (
   qw(steady_time tablify trim unindent unquote url_escape url_unescape),
   qw(xml_escape xor_encode)
 );
-
-# DEPRECATED in Top Hat!
-push @EXPORT_OK, 'get_line';
 
 sub b64_decode { decode_base64($_[0]) }
 sub b64_encode { encode_base64($_[0], $_[1]) }
@@ -111,15 +109,11 @@ sub deprecated {
   $ENV{MOJO_FATAL_DEPRECATIONS} ? croak(@_) : carp(@_);
 }
 
-sub dumper { Data::Dumper->new([@_])->Indent(1)->Sortkeys(1)->Terse(1)->Dump }
+sub dumper {
+  Data::Dumper->new([@_])->Indent(1)->Sortkeys(1)->Terse(1)->Useqq(1)->Dump;
+}
 
 sub encode { _encoding($_[0])->encode("$_[1]") }
-
-# DEPRECATED in Top Hat!
-sub get_line {
-  deprecated 'Mojo::Util::get_line is DEPRECATED';
-  ${$_[0]} =~ s/^(.*?)\x0d?\x0a// ? $1 : undef;
-}
 
 sub hmac_sha1_sum { hmac_sha1_hex(@_) }
 
@@ -334,8 +328,8 @@ sub unquote {
 
 sub url_escape {
   my ($str, $pattern) = @_;
-  $pattern ||= '^A-Za-z0-9\-._~';
-  $str =~ s/([$pattern])/sprintf('%%%02X',ord($1))/ge;
+  if ($pattern) { $str =~ s/([$pattern])/sprintf('%%%02X',ord($1))/ge }
+  else          { $str =~ s/([^A-Za-z0-9\-._~])/sprintf('%%%02X',ord($1))/ge }
   return $str;
 }
 
@@ -394,6 +388,44 @@ sub _decode {
 
 sub _encoding {
   $CACHE{$_[0]} //= find_encoding($_[0]) // croak "Unknown encoding '$_[0]'";
+}
+
+sub _options {
+
+  # Hash or name (one)
+  return ref $_[0] eq 'HASH' ? (undef, %{shift()}) : @_ if @_ == 1;
+
+  # Name and values (odd)
+  return shift, @_ if @_ % 2;
+
+  # Name and hash or just values (even)
+  return ref $_[1] eq 'HASH' ? (shift, %{shift()}) : (undef, @_);
+}
+
+sub _stash {
+  my ($name, $object) = (shift, shift);
+
+  # Hash
+  my $dict = $object->{$name} ||= {};
+  return $dict unless @_;
+
+  # Get
+  return $dict->{$_[0]} unless @_ > 1 || ref $_[0];
+
+  # Set
+  my $values = ref $_[0] ? $_[0] : {@_};
+  @$dict{keys %$values} = values %$values;
+
+  return $object;
+}
+
+sub _teardown {
+  return unless my $class = shift;
+
+  # @ISA has to be cleared first because of circular references
+  no strict 'refs';
+  @{"${class}::ISA"} = ();
+  delete_package $class;
 }
 
 1;

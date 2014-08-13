@@ -5,8 +5,8 @@ package YAML::Tiny;
 BEGIN {
   $YAML::Tiny::AUTHORITY = 'cpan:ADAMK';
 }
-# git description: v1.61-3-g0a82466
-$YAML::Tiny::VERSION = '1.62';
+# git description: v1.62-12-gb635350
+$YAML::Tiny::VERSION = '1.63';
 # XXX-INGY is 5.8.1 too old/broken for utf8?
 # XXX-XDG Lancaster consensus was that it was sufficient until
 # proven otherwise
@@ -299,10 +299,11 @@ Did you decode with lax ":utf8" instead of strict ":encoding(UTF-8)"?
             }
         }
     };
-    if ( ref $@ eq 'SCALAR' ) {
-        $self->_error(${$@});
-    } elsif ( $@ ) {
-        $self->_error($@);
+    my $err = $@;
+    if ( ref $err eq 'SCALAR' ) {
+        $self->_error(${$err});
+    } elsif ( $err ) {
+        $self->_error($err);
     }
 
     return $self;
@@ -512,6 +513,10 @@ sub _load_hash {
         }
         else {
             die \"YAML::Tiny failed to classify line '$lines->[0]'";
+        }
+
+        if ( exists $hash->{$key} ) {
+            die \"YAML::Tiny found a duplicate key '$key' in line '$lines->[0]'";
         }
 
         # Do we have a value?
@@ -877,7 +882,7 @@ YAML::Tiny - Read/Write YAML files with as little code as possible
 
 =head1 VERSION
 
-version 1.62
+version 1.63
 
 =head1 PREAMBLE
 
