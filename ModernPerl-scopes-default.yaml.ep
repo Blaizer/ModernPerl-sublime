@@ -57,7 +57,6 @@ comment_line:  comment.line.number-sign
 comment_block: comment.block                  # things like =pod, __END__
 variable:      punctuation.definition.var     # $ @ % * variables outside strings
 function:      support.function               # barewords. identifiers not already highlighted
-method:        $function.method               # Foo->method, $foo->method
 number:        punctuation.definition.number
 
 string_variable: $keyword_storage             # $ and @ variables inside strings
