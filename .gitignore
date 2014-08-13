@@ -1,6 +1,6 @@
-!.git*
 .*
+!.git*
+!.no-sublime-package
 *.cache
 *.log
 *.old
-ModernPerl-scopes-user.yaml.ep
