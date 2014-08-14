@@ -212,8 +212,8 @@ for (
                 # this means no spaces at the start or end unless they're backslashed
                 # so /\ woo regex\ / works
                 (?!\s)
-                (?: [^\\/]+   | \\. )*
-                (?: [^\\/\s]+ | \\. )
+                (?: [^\\/]+  | \\. )*
+                (?: [^\\/\s] | \\. )
             )
             \/
         )
