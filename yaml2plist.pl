@@ -193,6 +193,6 @@ sub printout {
 }
 
 sub badprint {
-	eval "END { exit 1 }"; # exit 1 on END if we ever reach this code
+	state $once = eval "END { exit 1 }"; # exit 1 on END if we ever reach this code
 	print @_;
 }
