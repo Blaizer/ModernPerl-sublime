@@ -184,7 +184,7 @@ for (
             )
         |
             # named operators you'd expect before a /regex/
-            (?<=\w)
+            \b
             (?:
                 # never gonna be perfect with the limitations of lookbehinds, but this is close
                 (?<= if | or )                           %%2%
@@ -212,7 +212,7 @@ for (
                 # this means no spaces at the start or end unless they're backslashed
                 # so /\ woo regex\ / works
                 (?!\s)
-                (?: [^\\/]+  | \\. )*
+                (?: [^\\/]   | \\. )*
                 (?: [^\\/\s] | \\. )
             )
             \/
