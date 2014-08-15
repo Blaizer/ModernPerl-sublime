@@ -385,8 +385,8 @@ q(asd \(  \) ()() ( ((\)\())   \)  \(   )  ddd)
 
 "we got\ escapes\! \n \1 \9 ...yup"
 "Yeah... \Qno way $I'm @messing with these\E... Too hard"
-"octals... \0000 \7777 \80344 \0yeah \o{} \o{_} \o{_12_} but not \o{ } \o{1f}  "
-"\x{} and \x{_} and \x{_dead_BEEF01_} \xA2f \x5n \x000 \xg but not \x{ } \x{boob}"
+"octals... \0000 \7777 \80344 \0yeah \o{} \o{_} \o{_1__2_} but not \o{ } \o{1f}  "
+"\x{} and \x{_} and \x{_dead__BEEF01_} \xA2f \x5n \x000 \xg but not \x{ } \x{boob}"
 "unicode... \N{U+0} \N{U+0f0af3} \N{U+_0_0} and \N{} \N{Everyth1ng \"\\\" ACC##PT*{([ED\}? Yeah."
 "but not unicode \N{U+} \N{U+_} \N{U+__} \N{U+0_} \N{U+0__0}"
 "this shouldn't work: \N{Charname with quote    " in it}" #}"
@@ -398,7 +398,13 @@ q(asd \(  \) ()() ( ((\)\())   \)  \(   )  ddd)
 "weird use of \c: \c\"" #"
 "weird use of \c: \c\\" #"
 "weird use of \c: \c\\n" #"
-qq{ \} \. \n \1 \000 \o{1234567} \x1f \x{12ef} \N{U+1f} \N{} \N{a\s\{\d\\\} \cA \c@ \c\ \c\{ \c\} }
+qq{ \} \. \n \1 \000 \o{1234567} \x1f \x{12ef} \N{U+1f} \N{} {\N{a}} \cA \c@ \c\ \c\{ \c\} }
+qq{ yes \o\{1234567\} \x\{12ef\} \N\{U+1f\} \N\{\} }
+qq{ no{ \o\{1234567} {\x\{12ef} {\N\{U+1f} {\N\{} }
+qq{ no  \o{1234567\}} \x{12ef\}} \N{U+1f\}} \N{\} }
+qq{{  no\N{\} yes\N{\\} no\N{\\\} yes\N{\\\\}  }};
+qq{{  no\N\{\\} yes\N\{\\\} no\N\{\\\\} yes\N\{\\\\\}  }};
+qq{{\N{should allow \{}} \N\{asd\} {\N{should not allow {}}};
 
 qq$inside this \$foo is actually a variable$
 qq@inside this \@foo is actually a variable@
