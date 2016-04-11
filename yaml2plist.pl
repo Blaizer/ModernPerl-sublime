@@ -41,11 +41,11 @@ use File::Spec::Functions;
 use File::Basename;
 use Data::Dumper;
 
+use lib catfile $FindBin::Bin, "inc";
 BEGIN { eval {
 	require YAML::Any;
 	require Mojo::Template;
 } }
-use lib catfile $FindBin::Bin, "inc";
 use YAML::Any qw/Load/;
 use Mojo::Template;
 
@@ -187,6 +187,7 @@ sub printout {
 	my $outfile = shift;
 	chmod 0666, $outfile if -f $outfile; # read-write
 	open my $out, ">", $outfile;
+	binmode $out;
 	print $out @_;
 	close $out;
 	chmod 0444, $outfile; # read only
