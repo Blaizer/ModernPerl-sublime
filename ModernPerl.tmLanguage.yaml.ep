@@ -162,8 +162,8 @@ for (
     [ 'qw?', "(')", 'meta.string.q.perl',  'string_single',   'single' ],
     [ 'qq',  '(")', 'meta.string.qq.perl', 'string_double',   'double' ],
     [ 'qx',  '(`)', 'meta.string.qx.perl', 'string_backtick', 'double',        'single' ],
-    [ 'qr',  undef, 'meta.regexp.qr.perl', 'string_regexp',   'double_regexp', 'single',   'adilmopsux' ],
-    [ 'm',   <<'#', 'meta.regexp.m.perl',  'string_regexp',   'double_regexp', 'single', 'acdgilmopsux' ],
+    [ 'qr',  undef, 'meta.regexp.qr.perl', 'string_regexp',   'double_regexp', 'single',   'adilmnopsux' ],
+    [ 'm',   <<'#', 'meta.regexp.m.perl',  'string_regexp',   'double_regexp', 'single', 'acdgilmnopsux' ],
 # Guessing whether a / is a division or the start of a regex is pretty tricky!
         (?=\s*/) # optimisation to fail faster
         (?:
@@ -294,8 +294,8 @@ for (
 % }
 <%
 for (
-    [ 's',        'meta.regexp.s.perl', 'double_or_single_regexp', 'double_or_single', 'acdegilmoprsux' ],
-    [ '(?:tr|y)', 'meta.tr.perl',       'double_or_single',        'double_or_single',           'cdrs' ],
+    [ 's',        'meta.regexp.s.perl', 'double_or_single_regexp', 'double_or_single', 'acdegilmnoprsux' ],
+    [ '(?:tr|y)', 'meta.tr.perl',       'double_or_single',        'double_or_single',            'cdrs' ],
 ) {
     my ($keyword, $meta, $first_include, $second_include, $modifiers) = @$_;
 %>\

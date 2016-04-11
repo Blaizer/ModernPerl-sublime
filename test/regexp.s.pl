@@ -52,29 +52,29 @@
 
 # Now go and abuse these hacky backreferences to your heart's content! I know I have!
 
-s [ \asd ] { \aaa }eeegimosxqegimosx
-s < a\sd > ( a\aa ) egimosxq
-s ( as\d ) / aa\a /eeegimosxEgimosx
-s { $asd } \ $aaa \ egimosxE
+s [ \asd ] { \aaa }eeegimnosxqegimnosx
+s < a\sd > ( a\aa ) egimnosxq
+s ( as\d ) / aa\a /eeegimnosxEgimosx
+s { $asd } \ $aaa \ egimnosxE
 
 s (
     stuff
   )[
     second stuff
-  ]egimosxqq
+  ]egimnosxqq
 
 s(
   stuff
 )!
   second stuff
-!egimosxEE
+!egimnosxEE
 
 s (
     f
   )
   (
     s
-  )egimosxqq
+  )egimnosxqq
 
 s < f >#
   yup
@@ -85,7 +85,7 @@ s<
 > # < yup > #
 < # dun think so
   # ok wut
->egimosxqq
+>egimnosxqq
 
 s [
    	first
@@ -95,7 +95,7 @@ s [
 
   [
     second
-  ]egimosxEE
+  ]egimnosxEE
 
 s[
   first
@@ -105,7 +105,7 @@ s[
 
 ^
   second
-^egimosxqq
+^egimnosxqq
 
 s
 exit ok
@@ -174,12 +174,12 @@ s /
     \thing
   /
     $boob
-  /egimosx
+  /egimnosx
 s'\s
 $s
 \s'$s
 \s
-\s'egimosx
+\s'egimnosx
 
 tr /
     \thing
