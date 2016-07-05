@@ -1123,19 +1123,19 @@ sub c {
                 begin: |
                     (?x)
                     (?:
-                        (<%= $identifier %>) \b
+                        ( (?:\w+_)? <%= $identifier %>) \b
                         |
                         \s* (["`'])
                         (?:
-                            ((?<=") \s* (?:<%= $identifier %>))
+                            ((?<=") \s* (?: (?:\w+_)? <%= $identifier %>))
                             |
-                            ((?<=`) \s* (?:<%= $identifier %>))
+                            ((?<=`) \s* (?: (?:\w+_)? <%= $identifier %>))
                             |
-                            (\s* (?:<%= $identifier %>))
+                            (\s* (?: (?:\w+_)? <%= $identifier %>))
                         )
                         (\2)
                         |
-                        \\ (<%= $identifier %>) \b
+                        \\ ( (?:\w+_)? <%= $identifier %>) \b
                     )
                     .* \n?
                 end: |-
