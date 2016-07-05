@@ -1110,12 +1110,12 @@ sub c {
             patterns:
             <%
             for (
-                [qw( CSS            source.css      )],
-                [qw( HTML           text.html.basic )],
-                [qw( JS|JAVASCRIPT  source.js       )],
-                [qw( PERL           source.perl     )],
-                [qw( SQL            source.sql      )],
-                [qw( XML            text.xml        )],
+                [qw( CSS                source.css      )],
+                [qw( HTML               text.html.basic )],
+                [qw( (?:JS|JAVASCRIPT)  source.js       )],
+                [qw( PERL               source.perl     )],
+                [qw( SQL                source.sql      )],
+                [qw( XML                text.xml        )],
             ) {
                 my ($identifier, $scope_selector) = @$_;
             %>
