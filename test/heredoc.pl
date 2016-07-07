@@ -61,6 +61,13 @@ _2
 # but \ number is probably a heredoc
 <<\2
 2
+# a number followed by a word is probably a herdoc
+<<2D
+2D
+<<22_Days_12
+22_Days_12
+# but just underscores and numbers is still a number
+<<222_22
 
 # these never highlight
 << foo
@@ -158,3 +165,22 @@ sub foo {
         XML
     PERL
 }
+
+# allow an optional WORD_ before the identifier
+<<END_SQL
+select * from foo
+END_SQL
+
+# just _ works
+<<"_JAVASCRIPT"
+function foo () {}
+_JAVASCRIPT
+
+<<\FOOBAR_JS
+function foobar () {}
+FOOBAR_JS
+
+# lowercase doesn't work
+<<not_HTML
+<nope>
+not_HTML

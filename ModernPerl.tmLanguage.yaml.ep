@@ -1101,6 +1101,8 @@ sub c {
                 << (?=
                     [^\W\d]\w*
                     |
+                    \d\w*[\p{Alpha}]\w*+ # word starting with digit but containing a non-digit
+                    |
                     \\ \w*
                     |
                     \s* (['"`]) .*? \1
@@ -1118,24 +1120,25 @@ sub c {
                 [qw( XML                text.xml        )],
             ) {
                 my ($identifier, $scope_selector) = @$_;
+                $identifier = '(?:[^\W\p{Lower}]*_)? ' . $identifier;
             %>
             -
                 begin: |
                     (?x)
                     (?:
-                        ( (?:\w+_)? <%= $identifier %>) \b
+                        ( <%= $identifier %> ) \b
                         |
                         \s* (["`'])
                         (?:
-                            ((?<=") \s* (?: (?:\w+_)? <%= $identifier %>))
+                            ((?<=") \s* (?: <%= $identifier %> ))
                             |
-                            ((?<=`) \s* (?: (?:\w+_)? <%= $identifier %>))
+                            ((?<=`) \s* (?: <%= $identifier %> ))
                             |
-                            (\s* (?: (?:\w+_)? <%= $identifier %>))
+                            (\s* (?: <%= $identifier %> ))
                         )
                         (\2)
                         |
-                        \\ ( (?:\w+_)? <%= $identifier %>) \b
+                        \\ ( <%= $identifier %> ) \b
                     )
                     .* \n?
                 end: |-
