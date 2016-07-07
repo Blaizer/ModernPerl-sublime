@@ -1101,6 +1101,8 @@ sub c {
                 << (?=
                     [^\W\d]\w*
                     |
+                    \d\w*[\p{Alpha}]\w*+ # word starting with digit but containing a non-digit
+                    |
                     \\ \w*
                     |
                     \s* (['"`]) .*? \1
@@ -1110,32 +1112,33 @@ sub c {
             patterns:
             <%
             for (
-                [qw( CSS            source.css      )],
-                [qw( HTML           text.html.basic )],
-                [qw( JS|JAVASCRIPT  source.js       )],
-                [qw( PERL           source.perl     )],
-                [qw( SQL            source.sql      )],
-                [qw( XML            text.xml        )],
+                [qw( CSS                source.css      )],
+                [qw( HTML               text.html.basic )],
+                [qw( (?:JS|JAVASCRIPT)  source.js       )],
+                [qw( PERL               source.perl     )],
+                [qw( SQL                source.sql      )],
+                [qw( XML                text.xml        )],
             ) {
                 my ($identifier, $scope_selector) = @$_;
+                $identifier = '(?:[^\W\p{Lower}]*_)? ' . $identifier;
             %>
             -
                 begin: |
                     (?x)
                     (?:
-                        (<%= $identifier %>) \b
+                        ( <%= $identifier %> ) \b
                         |
                         \s* (["`'])
                         (?:
-                            ((?<=") \s* (?:<%= $identifier %>))
+                            ((?<=") \s* (?: <%= $identifier %> ))
                             |
-                            ((?<=`) \s* (?:<%= $identifier %>))
+                            ((?<=`) \s* (?: <%= $identifier %> ))
                             |
-                            (\s* (?:<%= $identifier %>))
+                            (\s* (?: <%= $identifier %> ))
                         )
                         (\2)
                         |
-                        \\ (<%= $identifier %>) \b
+                        \\ ( <%= $identifier %> ) \b
                     )
                     .* \n?
                 end: |-
