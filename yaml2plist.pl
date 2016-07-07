@@ -42,11 +42,7 @@ use File::Basename;
 use Data::Dumper;
 
 use lib catfile $FindBin::Bin, "inc";
-BEGIN { eval {
-	require YAML::Any;
-	require Mojo::Template;
-} }
-use YAML::Any qw/Load/;
+use YAML::XS qw/Load/;
 use Mojo::Template;
 
 use subs qw/convert printout badprint/;
